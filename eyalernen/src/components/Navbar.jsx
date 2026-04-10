@@ -4,14 +4,32 @@ function Navbar() {
 
   const [mobileMenuOpen, setMobileMenuOpen ]= useState(false);
   return (
-    <nav className="bg-white/80 backdrop-blur-md shadow-sm fixed w-full z-50">
+    <nav className=" border-r border-gray-200 backdrop-blur-md shadow-sm fixed w-full z-50 py-2">
       <div className="app-container flex justify-between items-center h-16">
         {/* logo */}
-        <span className="gradient-text text-2xl font-bold">EyaLernen</span>
+         <div>
+           <div className="flex items-center gap-3  px-6 py-3 rounded-2xl">
+            <div className="w-12 h-12 bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                 rounded-[14px] flex items-center justify-center text-2xl
+                 shadow-[0_4px_16px_rgba(245,166,35,0.4)]" >
+                  🦉
+            </div>
+                   {/* */}
+            <span className=" text-3xl font-black tracking-tight">
+            <span className="text-gray-900">Eya</span>
+            <span className="text-gray-900">Lernen</span>
+             </span>
+           </div>
+          </div>
 
         <div className="hidden md:flex items-center space-x-8">
-          <a href='#' className='nav-btn'>Se connecter</a>
-          <a href='#' className='nav-btn'>Commencer</a>
+          <a href='#' className="text-sm font-extrabold px-5 py-2.5 rounded-xl border
+               border-[#667085] text-[#3A2600] bg-transparent
+               hover:border-white/5 hover:bg-[#E09010] transition">Se connecter</a>
+          <a href="/inscription" className="text-sm font-extrabold px-5 py-2.5 rounded-xl
+               bg-[#F5A623] text-[#3A2600]
+               shadow-[0_4px_14px_rgba(245,166,35,0.35)]
+               hover:bg-[#E09010] transition">Commencer</a>
         </div>
 
         {/*telephone*/}

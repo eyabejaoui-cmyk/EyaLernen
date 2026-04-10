@@ -3,26 +3,37 @@ import { Link } from "react-router-dom";
 
 function HeroSection() {
   return (
+    <div className='py-10'>
     <section id='home' className='app-container mb-4 pt-32 pb-12 overflow-hidden sm:overflow-visible '>
       <div className="flex flex-col gap-6 mb-4"></div>
       <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center '>
         {/*gauche*/}
-        <div className='sapece-y-6'>
-          <h1 className="text-4xl mb-4 md:text-5lx lg:text-3xl font-bold leading-tigt">
-            <span className="gradient-text  ">Apprendre autrement avec l'IA </span>
-          </h1>
+        <div className="space-y-6">
+          <h1 className="text-5xl md:text-6xl font-black leading-tight mb-4">
+            <span className="text-[#0F172A]">Apprends l’allemand</span>
             <br />
-            <p className="text-lg mb-4 text-grey-600 max-w-lg">
-              Une académie nouvelle génération — chatbot IA, 
-              avatars, scénarios immersifs et mentors d'élite.
-               Tout ce dont vous avez besoin pour progresser.</p>
-            <div className="flex flex-col mb-4 sm:flex-row gap-4 pt-4">
-              <Link className="btn-primary" to="/commencer">Commencer</Link>
-              <a className='btn-outline' href="#">Voir les fonctionnalités</a>
-            </div>
-          
+            <span className="text-[#667085]">sans </span>
+            <span className="text-[#F5A623]">peur.</span>
+          </h1>
+
+          <p className="text-lg mb-4 max-w-md text-[#667085] leading-8">
+           Pratique la communication avec un chatbot bienveillant.
+           Des explications simples en français et en derja.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <Link to="/commencer" className="bg-[#F5A623] text-[#3A2600] font-extrabold px-7 py-3.5 rounded-2xl shadow-[0_4px_14px_rgba(245,166,35,0.35)] hover:bg-[#E09010] transition" >
+              Commencer gratuitement
+            </Link>
+
+            <a href="#" className="bg-white text-[#3A2600] border border-[#D9DEE8] font-bold px-7 py-3.5 rounded-2xl hover:bg-[#F5A623] transition ">
+              Voir les fonctionnalités
+            </a>
+          </div>
         </div>
 
+           
+          
         {/*droite*/}
         <div style={{ position: "relative", display: "flex", justifyContent: "center", width: 420, margin: "0 auto" }}>
           {/* Floating badges */}
@@ -59,6 +70,7 @@ function HeroSection() {
         </div>
       </div>
     </section>
+    </div>
   );
 }
      

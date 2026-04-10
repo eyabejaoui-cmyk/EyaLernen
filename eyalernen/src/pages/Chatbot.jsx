@@ -7,11 +7,72 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [mode, setMode] = useState("chat");
   const [loading, setLoading] = useState(false);
+  const [listening, setListening] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "bot", text: "Salut 👋 Écris un sujet (ex: présentation, restaurant, travail) !" },
+    { role: "bot", text: "Hallo!" },
   ]);
 
   const boxRef = useRef(null);
+
+  //function speakText(text) {
+  //const utterance = new SpeechSynthesisUtterance(text);
+  //utterance.lang = "de-DE";
+  //window.speechSynthesis.speak(utterance);
+//}
+
+function speakText(text) {
+  window.speechSynthesis.cancel();
+
+  const parts = text.split("\n").map((p) => p.trim()).filter(Boolean);
+
+  parts.forEach((part) => {
+    const utterance = new SpeechSynthesisUtterance(part);
+
+    if (/[\u0600-\u06FF]/.test(part)) {
+      utterance.lang = "ar";
+    } else {
+      utterance.lang = "de-DE";
+    }
+
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+
+
+
+function startVoiceRecognition() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("La reconnaissance vocale n'est pas supportée sur ce navigateur.");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "de-DE";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  setListening(true);
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    setInput(transcript);
+  };
+
+  recognition.onerror = (event) => {
+    console.log("Erreur micro :", event.error);
+    setListening(false);
+  };
+
+  recognition.onend = () => {
+    setListening(false);
+  };
+
+  recognition.start();
+}
 
   // Auto-scroll en bas à chaque nouveau message
   useEffect(() => {
@@ -66,7 +127,9 @@ export default function Chatbot() {
       }
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "bot", text: data.reply ?? "(Réponse vide)" }]);
+      const botReply = data.reply ?? "(Réponse vide)";
+      setMessages((prev) => [...prev, { role: "bot", text: botReply }]);
+      speakText(botReply);
     } catch (err) {
       const msg =
         err?.name === "AbortError"
@@ -82,74 +145,94 @@ export default function Chatbot() {
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: "30px auto", fontFamily: "Arial" }}>
-      <h2>EyaLernen Chatbot</h2>
-
-      <div style={{ marginBottom: 10 }}>
-        <select value={mode} onChange={(e) => setMode(e.target.value)} disabled={loading}>
-          <option value="chat">Chat</option>
-          <option value="correction">Correction</option>
-          <option value="roleplay">Roleplay</option>
-        </select>
+    <div className="h-screen flex flex-col bg-[#f8f6f4]">
+      
+      <div className="border-b border-[#ddd6cf] flex items-center px-8 py-4 bg-[#F4F2EF]">
+        <div className="flex items-center gap-4"> 
+          <div className="w-12 h-12 bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                 rounded-[14px] flex items-center justify-center text-2xl
+                 shadow-[0_4px_16px_rgba(245,166,35,0.4)]" >
+                  🦉
+            </div>
+            <div>
+              <h2 className="font-semibold text-gray-700">Eya – Assistant IA</h2>
+            </div>
+        </div>
       </div>
+      
 
       <div
         ref={boxRef}
-        style={{
-          border: "1px solid #ddd",
-          padding: 12,
-          borderRadius: 10,
-          height: 380,
-          overflowY: "auto",
-          background: "#fff",
-        }}
-      >
+        className="flex-1 overflow-y-auto px-6 py-6 space-y-4"
+        >
         {messages.map((m, i) => (
           <div
             key={i}
-            style={{
-              textAlign: m.role === "user" ? "right" : "left",
-              margin: "8px 0",
-            }}
+            className={`flex items-start gap-4 my-4 ${
+              m.role === "user" ? "justify-end" : "justify-start"
+            }`}
           >
-            <span
-              style={{
-                display: "inline-block",
-                padding: "10px 12px",
-                borderRadius: 10,
-                background: m.role === "user" ? "#e8f0ff" : "#f2f2f2",
-                whiteSpace: "pre-wrap",
-                maxWidth: "85%",
-              }}
+            {m.role !== "user" && (
+             <div className="w-10 h-10 rounded-full bg-[#F5B63A] flex items-center justify-center text-lg shrink-0">
+              🤖
+             </div>
+            )}
+            <div
+              className={`px-5 py-1.5 rounded-[22px] max-w-[620px] whitespace-pre-wrap break-all overflow-hidden text-[15px] leading-8 border shadow-sm ${
+               m.role === "user"
+               ? "bg-[#1E3A78] text-white border-[#1E3A78]"
+               : "bg-white text-[#0f172a] border-[#ddd6cf]"
+              }`}
             >
               {m.text}
-            </span>
+            </div>
+            {m.role === "user" && (
+            <div className="w-10 h-10 rounded-full bg-[#1E3A78] flex items-center justify-center text-white text-lg shrink-0">
+               👤
+            </div>
+            )}
+              
+            
           </div>
         ))}
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Tape ton message..."
-          style={{ flex: 1, padding: 10, borderRadius: 10, border: "1px solid #ddd" }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              sendMessage();
-            }
-          }}
-          disabled={loading}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={loading}
-          style={{ padding: "10px 16px", borderRadius: 10, border: "1px solid #ddd" }}
-        >
-          {loading ? "..." : "Envoyer"}
-        </button>
-      </div>
+      <div className="border-t border-[#ddd6cf] px-6 py-4 bg-[#f8f6f4]">
+  <div className="max-w-4xl mx-auto flex items-center gap-4">
+    
+    <button
+      onClick={startVoiceRecognition}
+      disabled={loading || listening}
+      className="w-12 h-12 rounded-2xl border border-[#ddd6cf] bg-white flex items-center justify-center text-lg hover:bg-gray-50 transition"
+    >
+      {listening ? "🎙️" : "🎙"}
+    </button>
+
+    <input
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      placeholder="Schreib etwas auf Deutsch... (Écris quelque chose en allemand...)"
+      className="flex-1 h-12 rounded-2xl border border-[#ddd6cf] bg-white px-5 text-[15px] outline-none placeholder:text-[#64748b] transition "
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          sendMessage();
+        }
+      }}
+      disabled={loading}
+    />
+
+    <button
+      onClick={sendMessage}
+      disabled={loading}
+      className="w-12 h-12 rounded-2xl bg-[#F5A623] text-[#0f172a] flex items-center justify-center text-lg hover:opacity-90 transition"
+    >
+      {loading ? "..." : "➤"}
+    </button>
+
+  </div>
+</div>
+     
     </div>
   );
 }
