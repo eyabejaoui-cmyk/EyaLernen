@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware  #autorise le frontend à parler au backend.
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -9,8 +9,10 @@ from passlib.context import CryptContext
 
 
 import models
-from database import Base , engine , SessionLocal
+from database import Base , engine , SessionLocal ,  get_db
 from schemas import UserCreate , UserLogin
+
+
 
 load_dotenv()
 pwd_context = CryptContext (schemes=["bcrypt"],deprecated="auto")
@@ -25,53 +27,61 @@ def verify_password(plain_password:str ,hashed_password : str):
 
 app = FastAPI()  # cœur du backend
 
+from fastapi.middleware.cors import CORSMiddleware
+
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=False,   # 🔥 IMPORTANT
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Base.metadata.create_all(bind=engine)
 
-#mail 
+
 @app.post("/register")
-def register(user: UserCreate):
-     db = SessionLocal()
-     existing_user = db.query(models.User).filter(models.User.email == user.email).first()
-     if existing_user:
-         raise HTTPException(status_code=400 , detail="Email déjà utilisé")
-   
-     new_user = models.User(prenom = user.prenom,
-                            nom=user.nom,
-                            email=user.email,
-                            password_hash=hash_password(user.password),
-                            age=user.age,
-                            statut=user.statut,
-                            niveau=user.niveau,
-                            langue=user.langue, )
-     db.add(new_user)
-     db.commit()
-     db.close()
-     return {"message": "Utilisateur créé avec succès"}
-     
-@app.post("/login")
-def login(data: UserLogin):
+def register(data: UserCreate):
+    db = SessionLocal()
+
+    new_user = models.User(
+        prenom=data.prenom,
+        nom=data.nom,
+        email=data.email,
+        password_hash=hash_password(data.password),
+        age=data.age,
+        statut=data.statut,
+        niveau=data.niveau,
+        langue=data.langue
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.close()
+
+    return {"msg": "user ajouté"}
+
+#????    
+@app.post("/login") #route front+back
+def login(data: UserLogin):  #data eli jeya m front
     db = SessionLocal()
     user = db.query(models.User).filter(models.User.email == data.email).first()
     if not user:
         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
-    if not verify_password(data.password , user.password_hash):
-        raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
+    if not verify_password(data.password, user.password_hash):
+         raise HTTPException(status_code=400, detail="Email ou mot de passe incorrect")
     db.close()
     return {"message": "Connexion réussie"}
 
-
-# CORS (ton front est sur localhost:5175)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origin_regex=r"http://(localhost|127\.0\.0\.1):51\d{2}",
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
- 
 # Mistral
 api_key = os.getenv("MISTRAL_API_KEY")
+print("clé =", api_key)
+
 if not api_key:
     raise RuntimeError("MISTRAL_API_KEY manquant. Mets-le dans backend/.env")
  
@@ -79,12 +89,9 @@ client = Mistral(api_key=api_key)
 
 
  
- 
-class ChatRequest(BaseModel):
+class Chat(BaseModel):
     message: str
-    mode: str = "chat"               
-    history: list[dict] | None = None  # [{role:'user'|'assistant', text:'...'}]
- 
+    mode: str = "chat" 
  
 @app.get("/")
 def home():
@@ -150,77 +157,101 @@ WENN DU AUF TUNESISCH-DERJA ERKLÄRST:
 - Wenn du ein tunesisches Wort gibst, erkläre direkt natürlich und menschlich.
 - Schreibe die tunesische Derja in arabischer Schrift, nicht in lateinischen Buchstaben.
 - Beispiele für den Stil: "ما فما حتى مشكل", "تو نفسرلك", "بشوية بشوية", "شنوة معناها", "عاود قلي"."""
-@app.post("/chat")
-def chat(req: ChatRequest):
-     user_msg = (req.message or "").strip() #ye5eth l message eli jey m front
-     
-     if not user_msg:
-          raise HTTPException(status_code=400, detail="Message vide")
-          
-     system = get_system_prompt(req.mode) ## Récupérer le system prompt adapté selon le mode choisi      
-     
-     user_text = user_msg.lower() #minuscules)
 
-     needs_derja_help = any(word in user_text for word in [
+
+@app.post("/chat")
+def chat(req: Chat):
+    try:
+        system = get_system_prompt(req.mode)
+
+        user_text = req.message.lower()
+
+        needs_derja = any(word in user_text for word in [
             "mafhemtch",
             "fassarli",
             "b derja",
             "derja",
             "tounsi",
-            "tnajem tfasarli",
-            "ich verstehe nicht",
-            "erklär auf tunesisch",
-            "kannst du auf tunesisch erklären",
-            "explain in tunisian"
-     ])
+            "ich verstehe nicht"
+        ])
 
-     extra_instruction = ""
-     if needs_derja_help :
-          extra_instruction = (
-                "Der Benutzer braucht jetzt eine kurze Erklärung auf Tunesisch-Derja "
-                "in lateinischer Schrift. Antworte zuerst kurz auf Tunesisch-Derja "
-                "und dann wieder in einfachem Deutsch."
-          )
-     
+        user_message = req.message
 
-     chat_messages = [{"role": "system", "content": system}]
-     
-     if req.history:
-          for m in req.history:
-               role = "user" if m.get("role") == "user" else "assistant"
-               content = (m.get("text") or "").strip()
-               if content:
-                    chat_messages.append({"role": role, "content": content})
+        if needs_derja:
+            user_message = (
+                req.message +
+                "\n\nWenn der Benutzer nicht versteht, erkläre kurz auf tunesischer Derja, dann antworte wieder einfach auf Deutsch."
+            )
 
+        db = SessionLocal()
 
-     chat_messages.append({"role": "user", "content": user_msg})
+        # 🔥 history
+        history = db.query(models.Message).order_by(models.Message.id.desc()).limit(5).all()
 
-     try:
+        # 🔥 corrections
+        corrections = db.query(models.DerjaCorrection).all()
+
+        correction_text = ""
+        for c in corrections:
+            correction_text += f"{c.wrong} -> {c.correct}\n"
+
+        # 🔥 learning instruction
+        learning_instruction = f"""
+        Apprends des messages précédents.
+
+        Utilise toujours ces corrections:
+        {correction_text}
+
+        Adapte-toi au style tunisien (Derja).
+        Ne répète pas les erreurs.
+        """
+
+        # 🔥 messages
+        chat_messages = [
+            {"role": "system", "content": system},
+            {"role": "system", "content": learning_instruction}
+        ]
+
+        # 🔥 ajouter history
+        for msg in reversed(history):
+            chat_messages.append({"role": "user", "content": msg.user_message})
+            chat_messages.append({"role": "assistant", "content": msg.bot_response})
+
+        # 🔥 ajouter message actuel (مرة واحدة فقط)
+        chat_messages.append({
+            "role": "user",
+            "content": user_message
+        })
+
+        # 🔥 appel Mistral
         resp = client.chat.complete(
-        model="mistral-small-latest",
-        messages=chat_messages,
-        temperature=0.7,)
+            model="mistral-small-latest",
+            messages=chat_messages
+        )
 
-        #resp = requests.post(
-           #"http://localhost:11434/api/chat",
-           #json={
-             # "model": "gemma3:1b",
-            #  "messages": chat_messages,
-           #   "stream": False
-          #},
-        #  timeout=60
-        #)
-        #data = resp.json()
-        #reply = (data.get("message", {}).get("content") or "").strip()
+        bot_reply = resp.choices[0].message.content
 
-        reply = (resp.choices[0].message.content or "").strip()
-        if not reply:
-          raise HTTPException(status_code=502, detail="Réponse vide du modèle")
-    
-        return {"reply": reply}
+        # تعلم بسيط جدا
+        if "الصحيح" in req.message:
+           new_corr = models.DerjaCorrection(
+             wrong=bot_reply,
+             correct=req.message
+           )
+           db.add(new_corr)
+           db.commit()
 
-     except HTTPException:
-          raise
-     except Exception as e:
-         raise HTTPException(status_code=500, detail=str(e))
-     
+        # 🔥 stockage
+        new_message = models.Message(
+            user_message=req.message,
+            bot_response=bot_reply
+        )
+
+        db.add(new_message)
+        db.commit()
+        db.close()
+
+        return {"response": bot_reply}
+
+    except Exception as e:
+        print("ERREUR =", e)
+        return {"response": str(e)}

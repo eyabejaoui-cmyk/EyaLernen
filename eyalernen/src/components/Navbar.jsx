@@ -23,7 +23,7 @@ function Navbar() {
           </div>
 
         <div className="hidden md:flex items-center space-x-8">
-          <a href='#' className="text-sm font-extrabold px-5 py-2.5 rounded-xl border
+          <a href="/login" className="text-sm font-extrabold px-5 py-2.5 rounded-xl border
                border-[#667085] text-[#3A2600] bg-transparent
                hover:border-white/5 hover:bg-[#E09010] transition">Se connecter</a>
           <a href="/inscription" className="text-sm font-extrabold px-5 py-2.5 rounded-xl

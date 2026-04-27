@@ -19,17 +19,53 @@ export default function Inscription(){
     // useNavigate vient de react-router-dom
     const navigate = useNavigate();
 
-   const handleCreateAccount = (e) => {
-        e.preventDefault();
+   
+    const handleCreateAccount = (e) => {
+  e.preventDefault();
 
-        if (!niveau || !langue) {
-           alert("Merci de remplir tous les champs");
-           return;
-        }
+  if (!niveau || !langue) {
+    alert("Merci de remplir tous les champs");
+    return;
+  }
 
-        navigate("/ness");
-        };
-    
+  console.log({
+  prenom,
+  nom,
+  email,
+  password,
+  age,
+  statut,
+  niveau,
+  langue
+  });
+
+  fetch("http://127.0.0.1:8000/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      prenom: prenom,
+      nom: nom,
+      email: email,
+      password: password,
+      age: age,
+      statut: statut,
+      niveau: niveau,
+      langue: langue
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    alert("Compte créé");
+    navigate("/ness");
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Erreur inscription");
+  });
+};
         const handleNext = () => {
            if (step === 1) {
             if (!prenom || !nom || !email || !password) {
@@ -53,7 +89,7 @@ export default function Inscription(){
         <div className="w-full max-w-xl rounded-[30px] border border-gray-300 items-center p-5 sm:p-8 md:p-10 bg-white ">
         <div className="leading-7 items-center ">
             <h1 className="mb-7 text-center text-xl font-bold sm:text-2xl">Créer un compte</h1>
-            <form>
+            <form onSubmit={handleCreateAccount}>
                 {step === 1 && (<> {/* <> fragment </>*/}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* colonne/ ligne*/}
                 <div>
@@ -172,9 +208,9 @@ export default function Inscription(){
 
                       {step === 3 && ( 
                         <button 
-                          type="button" 
+                          type="submit" 
                           className="rounded-2xl bg-[#F5A623] px-5 py-2 text-white" 
-                          onClick={handleCreateAccount}
+                          //onSubmit={handleCreateAccount}
                         > 
                           Créer un compte
                         </button>)}

@@ -6,7 +6,7 @@ class UserCreate(BaseModel):
     nom : str
     email : str
     password : str
-    age : int
+    age : str
     statut : str
     niveau : str
     langue : str
@@ -14,3 +14,6 @@ class UserCreate(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password : str
+
+class Chat(BaseModel):
+    message: str

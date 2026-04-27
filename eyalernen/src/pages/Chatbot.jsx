@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const API = "http://localhost:8000/chat";
+const API = "http://127.0.0.1:8000/chat";
 const TIMEOUT_MS = 30000; // 30s
 
 export default function Chatbot() {
@@ -14,11 +14,7 @@ export default function Chatbot() {
 
   const boxRef = useRef(null);
 
-  //function speakText(text) {
-  //const utterance = new SpeechSynthesisUtterance(text);
-  //utterance.lang = "de-DE";
-  //window.speechSynthesis.speak(utterance);
-//}
+  
 
 function speakText(text) {
   window.speechSynthesis.cancel();
@@ -104,10 +100,15 @@ function startVoiceRecognition() {
     try {
       const res = await fetch(API, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, mode, history }),
-        signal: controller.signal,
-      });
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+        message: text,
+        mode: mode
+        })
+        
+        });
 
       // Si FastAPI renvoie une erreur, il renvoie souvent JSON {"detail": "..."}
       if (!res.ok) {
@@ -127,14 +128,14 @@ function startVoiceRecognition() {
       }
 
       const data = await res.json();
-      const botReply = data.reply ?? "(Réponse vide)";
+      const botReply = data.response ?? "(Réponse vide)";
       setMessages((prev) => [...prev, { role: "bot", text: botReply }]);
       speakText(botReply);
     } catch (err) {
       const msg =
         err?.name === "AbortError"
           ? "Timeout: le serveur a mis trop de temps à répondre."
-          : err?.message || "Erreur inconnue";
+          : err?.message || JSON.stringify(err);
 
       console.log("Erreur fetch:", err);
       setMessages((prev) => [...prev, { role: "bot", text: `⚠️ Erreur: ${msg}` }]);

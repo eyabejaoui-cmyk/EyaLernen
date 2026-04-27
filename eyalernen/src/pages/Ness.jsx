@@ -9,6 +9,10 @@ import {
   User,
 } from "lucide-react";
 
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 // hna n3arfo component esmou Ness
 export default function Ness() {
   
