@@ -17,3 +17,17 @@ class UserLogin(BaseModel):
 
 class Chat(BaseModel):
     message: str
+
+
+class ProfesseurCreate(BaseModel):
+    email: str   
+
+    nom: str
+    prenom: str
+    description: str
+    horaires: str
+    niveau: str
+    groupe: int
+    prix_groupe: int
+    prix_individuel: int
+    image: str
