@@ -3,38 +3,63 @@ import { useEffect, useRef, useState } from "react";
 const API = "http://127.0.0.1:8000/chat";
 const TIMEOUT_MS = 30000; // 30s
 
-export default function Chatbot() {
+export default function Chatbot({ scenario }) {
   const [input, setInput] = useState("");
   const [mode, setMode] = useState("chat");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
   const [messages, setMessages] = useState([
-    { role: "bot", text: "Hallo!" },
-  ]);
+   { role: "bot", text: "Hallo!" },
+    ]);
 
   const boxRef = useRef(null);
+  
 
   
+
+//function speakText(text) {
+  //window.speechSynthesis.cancel();  //Arrête tout son qui fonctionne déjà
+
+  //const parts = text.split("\n").map((p) => p.trim()).filter(Boolean);  //["Hello", "How are you"] / Supprime les espaces
+
+  //parts.forEach((part) => {   // c le ligne
+    //const utterance = new SpeechSynthesisUtterance(part);
+    // utterance=le son / part=les mots / SpeechSynthesisUtterance= tranforme les mot en son
+    
+
+    
+    //if (/[\u0600-\u06FF]/.test(part)) {
+      //utterance.lang = "ar";
+    //} else {
+      //utterance.lang = "de-DE";
+    //}
+
+    //window.speechSynthesis.speak(utterance);
+    
+ //});
+//}
 
 function speakText(text) {
   window.speechSynthesis.cancel();
 
-  const parts = text.split("\n").map((p) => p.trim()).filter(Boolean);
+  const utterance = new SpeechSynthesisUtterance(text);
 
-  parts.forEach((part) => {
-    const utterance = new SpeechSynthesisUtterance(part);
+  const voices = speechSynthesis.getVoices();
 
-    if (/[\u0600-\u06FF]/.test(part)) {
-      utterance.lang = "ar";
-    } else {
-      utterance.lang = "de-DE";
-    }
+  
+  const germanVoice = voices.find(v => v.lang.startsWith("de"));
 
-    window.speechSynthesis.speak(utterance);
-  });
+  if (germanVoice) {
+    utterance.voice = germanVoice;
+    utterance.lang = germanVoice.lang;
+  } else {
+    utterance.lang = "de-DE";
+  }
+
+  utterance.rate = 1.0;
+
+  window.speechSynthesis.speak(utterance);
 }
-
-
 
 
 function startVoiceRecognition() {
@@ -77,6 +102,27 @@ function startVoiceRecognition() {
     }
   }, [messages]);
 
+
+  useEffect(() => {
+  if (scenario === "cafe") {
+    setMessages([
+      { role: "bot", text: "Guten Tag! Was möchten Sie bestellen?" }
+    ]);
+  }
+
+  if (scenario === "restaurant") {
+    setMessages([
+      { role: "bot", text: "Guten Abend! Haben Sie reserviert?" }
+    ]);
+  }
+
+  if (scenario === "supermarche") {
+    setMessages([
+      { role: "bot", text: "Hallo! Kann ich Ihnen helfen?" }
+    ]);
+  }
+}, [scenario]);
+
   async function sendMessage() {
     const text = input.trim();
     if (!text || loading) return;
@@ -98,17 +144,33 @@ function startVoiceRecognition() {
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
+      
+      let modeFinal = "chat";
+
+        if (scenario === "cafe") {
+           modeFinal = "roleplay_cafe";
+        }
+
+        if (scenario === "restaurant") {
+           modeFinal = "roleplay_restaurant";
+        }
+
+        if (scenario === "supermarche") {
+          modeFinal = "roleplay_supermarche";
+        }
+
+
       const res = await fetch(API, {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-        message: text,
-        mode: mode
-        })
-        
-        });
+      method: "POST",
+      headers: {
+      "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+      message: text,
+      mode: modeFinal
+
+   })
+   });
 
       // Si FastAPI renvoie une erreur, il renvoie souvent JSON {"detail": "..."}
       if (!res.ok) {
@@ -143,15 +205,20 @@ function startVoiceRecognition() {
       clearTimeout(timeoutId);
       setLoading(false);
     }
+    
   }
+
+  
+
+
 
   return (
     <div className="h-screen flex flex-col bg-[#f8f6f4]">
       
-      <div className="border-b border-[#ddd6cf] flex items-center px-8 py-4 bg-[#F4F2EF]">
+      <div className="border-b border-[#ddd6cf] flex items-center px-4 sm:px-8 py-3 sm:py-4 bg-[#F4F2EF]">
         <div className="flex items-center gap-4"> 
-          <div className="w-12 h-12 bg-gradient-to-br from-[#F5A623] to-[#E09010]
-                 rounded-[14px] flex items-center justify-center text-2xl
+          <div className="w-10 h-10 sm:w-12 sm:h-12 text-xl sm:text-2xl bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                 rounded-[14px] flex items-center justify-center
                  shadow-[0_4px_16px_rgba(245,166,35,0.4)]" >
                   🦉
             </div>
@@ -164,12 +231,12 @@ function startVoiceRecognition() {
 
       <div
         ref={boxRef}
-        className="flex-1 overflow-y-auto px-6 py-6 space-y-4"
+        className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4"
         >
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`flex items-start gap-4 my-4 ${
+            className={`flex items-start gap-2 sm:gap-4 my-4 ${
               m.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
@@ -179,7 +246,7 @@ function startVoiceRecognition() {
              </div>
             )}
             <div
-              className={`px-5 py-1.5 rounded-[22px] max-w-[620px] whitespace-pre-wrap break-all overflow-hidden text-[15px] leading-8 border shadow-sm ${
+              className={`px-5 py-1.5 rounded-[22px] max-w-[80%] sm:max-w-[70%] md:max-w-[620px] whitespace-pre-wrap break-all overflow-hidden text-sm sm:text-[15px] leading-6 sm:leading-8 border shadow-sm ${
                m.role === "user"
                ? "bg-[#1E3A78] text-white border-[#1E3A78]"
                : "bg-white text-[#0f172a] border-[#ddd6cf]"
@@ -198,13 +265,13 @@ function startVoiceRecognition() {
         ))}
       </div>
 
-      <div className="border-t border-[#ddd6cf] px-6 py-4 bg-[#f8f6f4]">
-  <div className="max-w-4xl mx-auto flex items-center gap-4">
+      <div className="border-t border-[#ddd6cf] px-3 sm:px-6 py-3 sm:py-4 bg-[#f8f6f4]">
+      <div className="max-w-4xl w-full mx-auto flex items-center gap-2 sm:gap-4">
     
     <button
       onClick={startVoiceRecognition}
       disabled={loading || listening}
-      className="w-12 h-12 rounded-2xl border border-[#ddd6cf] bg-white flex items-center justify-center text-lg hover:bg-gray-50 transition"
+      className="w-10 h-10 sm:w-12 sm:h-12 text-sm sm:text-[15px] rounded-2xl border border-[#ddd6cf] bg-white flex items-center justify-center text-lg hover:bg-gray-50 transition"
     >
       {listening ? "🎙️" : "🎙"}
     </button>
@@ -213,7 +280,7 @@ function startVoiceRecognition() {
       value={input}
       onChange={(e) => setInput(e.target.value)}
       placeholder="Schreib etwas auf Deutsch... (Écris quelque chose en allemand...)"
-      className="flex-1 h-12 rounded-2xl border border-[#ddd6cf] bg-white px-5 text-[15px] outline-none placeholder:text-[#64748b] transition "
+      className="flex-1 h-10 sm:h-12  rounded-2xl border border-[#ddd6cf] bg-white px-5 text-sm sm:text-[15px] outline-none placeholder:text-[#64748b] transition "
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();
@@ -226,7 +293,7 @@ function startVoiceRecognition() {
     <button
       onClick={sendMessage}
       disabled={loading}
-      className="w-12 h-12 rounded-2xl bg-[#F5A623] text-[#0f172a] flex items-center justify-center text-lg hover:opacity-90 transition"
+      className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#F5A623] text-[#0f172a] flex items-center justify-center text-lg hover:opacity-90 transition"
     >
       {loading ? "..." : "➤"}
     </button>

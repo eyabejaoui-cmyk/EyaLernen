@@ -75,7 +75,7 @@ export default function Ness() {
               <li>
                 
                 <Link
-                  to="/cours"
+                  to="/ProfList"
                   className="flex items-center gap-3 text-gray-600 font-medium rounded-2xl px-5 py-4 hover:bg-[#E09010]"
                 >
    
@@ -130,6 +130,7 @@ export default function Ness() {
             <div className="lg:col-span-2"> {/*espace à gauche*/ }
               <div className="flex flex-col gap-6"> {/*système flexible  direction verticale*/ } {/*conteneur cartes*/}
                  
+                 {/*discution*/}
                 <Link to="/chatbot" className="block">
                  <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)]  transition "> {/*carte */}
 
@@ -152,9 +153,9 @@ export default function Ness() {
                       </div>
                     </div>
                   </div>
-                </Link>
-
+                </Link >
                   {/*2 carte */}
+                  <Link to="/ModeAppel">
                   <div className="bg-white rounded-3xl overflow-hidden shadow-sm  hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)]  transition "> {/* 1*/}
                     <div className="flex justify-between"> {/* 2*/}
                       <div className="p-8 flex flex-col">
@@ -174,9 +175,12 @@ export default function Ness() {
                     </div>
 
                   </div>
+                  </Link>
+                  
 
 
                   {/* 3*/}
+                  <Link to="/Jeux">
                   <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)]  transition "> {/*carte */}
 
                     <div className="flex justify-between "> {/* structure interne*/}
@@ -197,7 +201,9 @@ export default function Ness() {
                       </div>
                     </div>
                   </div>  
+                  </Link>
 
+                  <Link to="/Mots">
                   <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)]  transition "> {/*carte */}
 
                     <div className="flex justify-between "> {/* structure interne*/}
@@ -218,7 +224,7 @@ export default function Ness() {
                       </div>
                     </div>
                   </div> 
-                
+                  </Link>
                 </div>
             </div>
 

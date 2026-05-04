@@ -7,6 +7,7 @@ import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 import { Link } from "react-router-dom";
 
+
 function Home() {
   return (
     <>
@@ -18,6 +19,11 @@ function Home() {
         <Contact />
         <Link to="/ness">l Sandi</Link>
         <Link to="/chatbot">Ouvrir Chatbot</Link>
+        <Link to="/ProfForm">rabi isahel</Link>
+        <Link to="DashboardPro">3la alah</Link>
+        <Link to="Admin">ya lahwi</Link>
+        <Link to="Dashboard">wwooohhh</Link>
+
       </main>
       <Footer />
     </>

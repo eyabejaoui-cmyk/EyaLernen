@@ -32,20 +32,25 @@ export default function Login(){
         })
     })
     .then(res => res.json())
-    .then(data => {    //après la réponse de serveur
-        console.log(data.message);
-        if (data.message === "Connexion réussie") {
-            
-            localStorage.setItem("user",email);
+    .then(data => {
+        console.log(data);
+    if (data.role === "student") {
+        navigate("/ness");
+    } 
+    else if (data.role === "prof") {
+        navigate("/ProfForm");
+    } 
+    else {
+        alert("Crée un compte");
+    }
 
-            navigate("/ness");
-
-        }
-    
     })
-
+    .catch(err => {
+    console.log("ERROR =", err);
+    });
 
     };  
+
     return(
     <form onSubmit={handleLogin}>
         <h1>Login</h1>

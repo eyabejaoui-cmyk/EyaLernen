@@ -22,7 +22,7 @@ function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link to="/commencer" className="bg-[#F5A623] text-[#3A2600] font-extrabold px-7 py-3.5 rounded-2xl shadow-[0_4px_14px_rgba(245,166,35,0.35)] hover:bg-[#E09010] transition" >
+            <Link to="/Inscription" className="bg-[#F5A623] text-[#3A2600] font-extrabold px-7 py-3.5 rounded-2xl shadow-[0_4px_14px_rgba(245,166,35,0.35)] hover:bg-[#E09010] transition" >
               Commencer gratuitement
             </Link>
 
