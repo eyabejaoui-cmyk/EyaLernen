@@ -1,26 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer
 } from "recharts";
 
-// ─── Mock Data ───────────────────────────────────────────────
-const activityData = [
-  { day: "Mon", users: 240, sessions: 180 },
-  { day: "Tue", users: 300, sessions: 230 },
-  { day: "Wed", users: 260, sessions: 200 },
-  { day: "Thu", users: 380, sessions: 310 },
-  { day: "Fri", users: 420, sessions: 350 },
-  { day: "Sat", users: 350, sessions: 280 },
-  { day: "Sun", users: 290, sessions: 220 },
-];
-
-const modeData = [
-  { mode: "Chatbot", minutes: 1240 },
-  { mode: "Jeux",    minutes: 860  },
-  { mode: "Appel",   minutes: 620  },
-];
 
 const recentUsers = [
   { id: 1, name: "Amira B.",   avatar: "AB", color: "#2563eb", mode: "chatbot", action: "Practiced vocab",    time: "2m ago"  },
@@ -48,12 +33,8 @@ const navItems = [
   { id: "settings",  label: "Settings",   section: "system"  },
 ];
 
-const statCards = [
-  { label: "Total Users",       value: "4,821", change: "▲ 12% this month", up: true,  color: "blue",   icon: "👥" },
-  { label: "Active Sessions",   value: "318",   change: "▲ 8% vs yesterday", up: true, color: "green",  icon: "⚡" },
-  { label: "Time Spent (min)",  value: "26.4k", change: "▲ 5% this week",   up: true,  color: "amber",  icon: "🕐" },
-  { label: "Progress Rate",     value: "73%",   change: "▼ 2% this week",   up: false, color: "purple", icon: "📈" },
-];
+// les cartes
+
 
 const modeBadgeStyle = {
   chatbot: { background: "#eff6ff", color: "#2563eb" },
@@ -82,7 +63,7 @@ const rankMedal = (r) => {
   return { symbol: `#${r}`, color: "#94a3b8" };
 };
 
-// ─── Sidebar ─────────────────────────────────────────────────
+// sidebar 
 function Sidebar({ active, onNav }) {
   const sections = ["main", "learning", "system"];
   return (
@@ -133,7 +114,7 @@ function Sidebar({ active, onNav }) {
   );
 }
 
-// ─── Navbar ──────────────────────────────────────────────────
+// navbar 
 function Navbar() {
   return (
     <header style={{
@@ -186,7 +167,7 @@ function Navbar() {
   );
 }
 
-// ─── Stat Card ───────────────────────────────────────────────
+// Stat Card 
 function StatCard({ label, value, change, up, color, icon }) {
   return (
     <div style={{
@@ -217,27 +198,27 @@ function StatCard({ label, value, change, up, color, icon }) {
   );
 }
 
-// ─── Charts ──────────────────────────────────────────────────
-function Charts() {
+// Charts 
+function Charts({ activityData, modeData }) {
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1.6fr 1fr", gap: 12, marginBottom: 18 }}>
-      {/* Line Chart */}
+      
       <div style={{ background: "#fff", borderRadius: 12, padding: 16, border: "1px solid #e2e8f0" }}>
-        <div style={{ fontWeight: 600, fontSize: 14, color: "#0f172a" }}>User Activity</div>
-        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14 }}>Active users & sessions this week</div>
+        <div style={{ fontWeight: 600, fontSize: 14, color: "#0f172a" }}>Activité des utilisateurs</div>
+        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14 }}>Activité des apprenants cette semaine</div>
         <ResponsiveContainer width="100%" height={160}>
           <LineChart data={activityData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
             <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={{ fontSize: 12, border: "1px solid #e2e8f0", borderRadius: 8, boxShadow: "none" }} />
-            <Line type="monotone" dataKey="users"    stroke="#2563eb" strokeWidth={2} dot={false} name="Users"    />
-            <Line type="monotone" dataKey="sessions" stroke="#10b981" strokeWidth={2} dot={false} name="Sessions" strokeDasharray="4 2" />
+            <Line type="monotone" dataKey="users"    stroke="#2563eb" strokeWidth={2} dot={false} name="Chatbot"    />
+            <Line type="monotone" dataKey="sessions" stroke="#10b981" strokeWidth={2} dot={false} name="Utilisation plateforme" strokeDasharray="4 2" />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Bar Chart */}
+      {/* Bar*/}
       <div style={{ background: "#fff", borderRadius: 12, padding: 16, border: "1px solid #e2e8f0" }}>
         <div style={{ fontWeight: 600, fontSize: 14, color: "#0f172a" }}>Time per Mode</div>
         <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14 }}>Minutes spent per learning mode</div>
@@ -255,7 +236,7 @@ function Charts() {
   );
 }
 
-// ─── Recent Activity ─────────────────────────────────────────
+// Recent Activity 
 function RecentActivity() {
   const [tab, setTab] = useState("all");
   const tabs = ["all", "chatbot", "jeux", "appel"];
@@ -354,8 +335,8 @@ function Leaderboard() {
   );
 }
 
-// ─── Dashboard Page ──────────────────────────────────────────
-function Dashboard() {
+// dashboard
+function Dashboard({ statCards, activityData, modeData  }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
       <div style={{ fontWeight: 700, fontSize: 20, color: "#0f172a", marginBottom: 4 }}>Dashboard</div>
@@ -363,13 +344,24 @@ function Dashboard() {
 
       {/* Stat Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginBottom: 18 }}>
-        {statCards.map((c) => <StatCard key={c.label} {...c} />)}
+        
+        {statCards.map((c) => (
+          <StatCard
+            key={c.label}
+            label={c.label}
+            value={c.value}
+            change={c.change}
+            up={c.up}
+            color={c.color}
+            icon={c.icon}
+          />
+        ))}
       </div>
 
-      {/* Charts */}
-      <Charts />
+      {/* chart */}
+      <Charts activityData={activityData} modeData={modeData} />
 
-      {/* Bottom row */}
+      {/* */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <RecentActivity />
         <Leaderboard />
@@ -378,9 +370,84 @@ function Dashboard() {
   );
 }
 
-// ─── Admin
+// Admin
 export default function Admin() {
   const [activeNav, setActiveNav] = useState("dashboard");
+
+  const [stats, setStats] = useState({
+    apprenants: 0,
+    conversations: 0,
+    temps: 0,
+    phrases: 0,
+  });
+
+  const [activityData, setActivityData] = useState([]);
+  const [modeData, setModeData] = useState([]);
+
+  useEffect(() => {
+
+  fetch("http://127.0.0.1:8000/admin/stats")
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      setStats(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  fetch("http://127.0.0.1:8000/activity")
+    .then((res) => res.json())
+    .then((data) => {
+      setActivityData(data);
+    });
+
+
+  fetch("http://127.0.0.1:8000/modes")
+  .then((res) => res.json())
+  .then((data) => {
+    setModeData(data);
+   });
+
+    }, []);
+
+  const statCards = [
+  {
+    label: "Apprenants",
+    value: stats.apprenants,
+    change: "Utilisateurs inscrits",
+    up: true,
+    color: "blue",
+    icon: "👨‍🎓"
+  },
+
+  {
+    label: "Conversations IA",
+    value: stats.conversations,
+    change: "Messages chatbot",
+    up: true,
+    color: "green",
+    icon: "🤖"
+  },
+
+  {
+    label: "Temps d'apprentissage",
+    value: `${stats.temps} min`,
+    change: "Temps total passé",
+    up: true,
+    color: "amber",
+    icon: "⏱️"
+  },
+
+  {
+    label: "Phrases terminées",
+    value: stats.phrases,
+    change: "Exercices complétés",
+    up: true,
+    color: "purple",
+    icon: "📚"
+  },
+];
 
   return (
     <div style={{
@@ -390,7 +457,9 @@ export default function Admin() {
       <Sidebar active={activeNav} onNav={setActiveNav} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <Navbar />
-        <Dashboard />
+        <Dashboard statCards={statCards}  
+        activityData={activityData}
+        modeData={modeData}/>
       </div>
     </div>
   );

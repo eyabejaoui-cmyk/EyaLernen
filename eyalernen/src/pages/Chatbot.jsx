@@ -103,6 +103,30 @@ function startVoiceRecognition() {
   }, [messages]);
 
 
+  
+
+  useEffect(() => {
+
+  const interval = setInterval(() => {
+
+    fetch("http://127.0.0.1:8000/update-time", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: "test@gmail.com",
+        temps: 1,
+      }),
+    });
+
+  }, 60000);
+
+  return () => clearInterval(interval);
+
+  }, []);
+
+
   useEffect(() => {
   if (scenario === "cafe") {
     setMessages([

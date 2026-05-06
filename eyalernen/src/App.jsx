@@ -12,8 +12,8 @@ import ProfForm from "./pages/ProfForm";
 import ProfList from "./pages/ProfList";
 import Mots from "./pages/Mots";
 import ModeAppel from "./pages/ModeAppel";
-import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
+
 
 export default function App() {
   return (
@@ -32,7 +32,7 @@ export default function App() {
       <Route path="/Mots" element={<Mots />} />
       <Route path="/ness/ModeAppel" element={<ModeAppel />} />
       <Route path="/Admin" element={<Admin />} />
-      <Route path="/Dashboard" element={<Dashboard />} />
+      
 
 
     </Routes>
