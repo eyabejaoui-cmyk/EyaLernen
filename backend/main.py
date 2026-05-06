@@ -17,6 +17,8 @@ from professeur import update_prof
 from schemas import ProfesseurCreate
 from routes_stats import router as stats_router
 
+from routes_admin import router as admin_router
+
 models.Base.metadata.create_all(bind=engine)
 
 
@@ -37,8 +39,8 @@ app = FastAPI()  # cœur du backend
 
 
 origins = [
-    "http://localhost:5177",
-    "http://127.0.0.1:5177",
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
 ]
 
 app.add_middleware(
@@ -574,4 +576,5 @@ async def tts(data: dict):
 def update(data: ProfesseurCreate):
     return update_prof(data.email, data)
 
-
+#route admin
+app.include_router(admin_router)

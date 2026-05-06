@@ -1,5 +1,7 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, DateTime
 from database import Base
+from datetime import datetime
+
 
 class User(Base) : 
     __tablename__ = "users"
@@ -19,7 +21,7 @@ class Message(Base):
     id = Column(Integer, primary_key=True)
     user_message = Column(String)
     bot_response = Column(String)
-
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class DerjaCorrection(Base):
     __tablename__ = "derja_corrections"
