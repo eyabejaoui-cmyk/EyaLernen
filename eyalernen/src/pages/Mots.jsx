@@ -138,6 +138,7 @@ export default function Mots() {
   };
 
   return (
+    
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#f5f6fb] pb-32">
 
       <button

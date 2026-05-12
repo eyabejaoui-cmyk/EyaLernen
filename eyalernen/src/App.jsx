@@ -13,7 +13,9 @@ import ProfList from "./pages/ProfList";
 import Mots from "./pages/Mots";
 import ModeAppel from "./pages/ModeAppel";
 import Admin from "./pages/Admin";
-
+import UserProfile from "./pages/UserProfile";
+import Subscription from "./pages/Subscription";
+import ProfesseurSpace from "./pages/ProfesseurSpace";
 
 export default function App() {
   return (
@@ -32,7 +34,9 @@ export default function App() {
       <Route path="/Mots" element={<Mots />} />
       <Route path="/ness/ModeAppel" element={<ModeAppel />} />
       <Route path="/Admin" element={<Admin />} />
-      
+      <Route path="/profile" element={<UserProfile />} />
+      <Route path="/subscription" element={<Subscription />} />
+      <Route path="/professeur-space" element={<ProfesseurSpace />} />
 
 
     </Routes>

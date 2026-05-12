@@ -1,456 +1,515 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import {
+  X,
+  LayoutGrid,
+  BookOpen,
+  GraduationCap,
+  TrendingUp,
+  User,
+} from "lucide-react";
 
 export default function ProfList() {
   const navigate = useNavigate();
-  const [showSara, setShowSara] = useState(false);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [professeurs, setProfesseurs] = useState([]);
+  const [selectedProf, setSelectedProf] = useState(null);
   const [typeCours, setTypeCours] = useState("groupe");
   const [showPayment, setShowPayment] = useState(false);
+  const [selectedCours, setSelectedCours] = useState(null);
   const [modePaiement, setModePaiement] = useState("heure");
 
+  const confirmPayment = async () => {
+    const savedEmail = localStorage.getItem("email");
+
+    if (!savedEmail || savedEmail === "undefined") {
+      alert("Vous devez être connecté pour réserver.");
+      return;
+    }
+
+    if (!selectedProf || !selectedCours) {
+      alert("Choisissez un cours d’abord.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/professeur/reserver", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          user_email: savedEmail,
+          professeur_id: selectedProf.id,
+          cours_id: selectedCours.id,
+          montant:
+            modePaiement === "heure"
+              ? selectedCours.prix
+              : selectedCours.prix * 4,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Paiement confirmé et réservation enregistrée.");
+        setShowPayment(false);
+        setSelectedProf(null);
+        setSelectedCours(null);
+      } else {
+        alert(data.detail || "Erreur lors de la réservation.");
+      }
+    } catch (error) {
+      alert("Erreur serveur. Vérifiez que FastAPI est lancé.");
+    }
+  };
+
+  const loadProfesseurs = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/professeurs");
+      const data = await response.json();
+
+      if (response.ok) {
+        setProfesseurs(data);
+      }
+    } catch (error) {
+      console.log("Erreur chargement professeurs :", error);
+    }
+  };
+
+  useEffect(() => {
+    loadProfesseurs();
+  }, []);
+
+  const coursFiltres = selectedProf
+    ? selectedProf.cours.filter((cours) => cours.type_cours === typeCours)
+    : [];
+
   return (
-
-    <div className="relative h-full rounded-3xl bg-[#f7f7fc] border-x-2 border-gray-300 p-8 py-14 px-3">
-
-      
-      <button
-        onClick={() => navigate("/ness")}
-        className="absolute top-4 right-4 w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-200 transition"
+    <div className="min-h-screen bg-[#f7f7fc] flex">
+      {/* Sidebar gauche */}
+      <aside
+        className={`
+        fixed top-0 left-0 z-50
+        h-screen
+        w-72
+        bg-[#F4F2EF]
+        border-r border-gray-200
+        flex flex-col justify-between
+        px-6 py-8
+        transition-transform duration-300
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        lg:translate-x-0
+        `}
       >
-        ✕
-      </button>
-
-      <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {/* ✅ CARD SARA (CORRIGÉ) */}
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
+        <button
+          onClick={() => setSidebarOpen(false)}
+          className="lg:hidden self-end mb-4"
         >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
+          <X size={24} />
+        </button>
 
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-        <div
-          onClick={() => setShowSara(true)}
-          className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
-        >
-          <img src="/images/mariem.png" className="w-16 h-16 rounded-full object-cover" />
-
-          <div>
-            <h2 className="font-semibold text-lg">Sarah Bennani</h2>
-            <p className="text-gray-500 text-sm">Conversations fluides et confiance à l'oral.</p>
-            <div className="flex gap-2 text-sm">
-              <span className="text-orange-500">⭐ 4.9</span>
-              <span className="text-gray-400">(248 avis)</span>
-            </div>
-            <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-              1ère séance offerte
-            </span>
-          </div>
-        </div>
-
-
-        
-
-    
-
-      </div>
-
-      {/* ✅ POPUP */}
-      {showSara && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-
-          <div className="bg-white w-[700px] rounded-3xl p-6 relative">
-
-            <button
-              onClick={() => setShowSara(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-black"
-            >
-              ✕
-            </button>
-
-            <div className="flex gap-4 items-center">
-              <img src="/images/mariem.png" className="w-20 h-20 rounded-xl" />
-              <div>
-                <h2 className="text-xl font-bold">Sarah Bennani</h2>
-                <p className="text-gray-500">Anglais conversationnel</p>
-                <p className="text-sm text-gray-400">
-                  ⭐ 4.9 • 248 avis • 540 élèves • 60 min
-                </p>
+        <div>
+          {/* Logo */}
+          <div className="mb-12">
+            <div className="flex items-center gap-3 px-6 py-3 rounded-2xl">
+              <div
+                className="
+                w-12 h-12
+                bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                rounded-[14px]
+                flex items-center justify-center
+                text-2xl
+                shadow-[0_4px_16px_rgba(245,166,35,0.4)]
+                "
+              >
+                🦉
               </div>
+
+              <span className="text-3xl font-black tracking-tight">
+                <span className="text-gray-900">Eya</span>
+                <span className="text-gray-900">Lernen</span>
+              </span>
             </div>
-
-            <p className="mt-4 text-gray-600">
-              Professeure certifiée avec 8 ans d'expérience. Méthode simple et pratique.
-            </p>
-            
-            <h3 className="mt-6 font-semibold">TYPE DE COURS</h3>
-
-<div className="flex gap-4 mt-3">
-
-  <div
-    onClick={() => setTypeCours("groupe")}
-    className={`px-4 py-2 rounded-xl cursor-pointer transition
-      ${typeCours === "groupe"
-        ? "bg-black text-white"
-        : "bg-gray-100 hover:bg-gray-200"}
-    `}
-  >
-    Groupe
-  </div>
-
-  <div
-    onClick={() => setTypeCours("individuel")}
-    className={`px-4 py-2 rounded-xl cursor-pointer transition
-      ${typeCours === "individuel"
-        ? "bg-black text-white"
-        : "bg-gray-100 hover:bg-gray-200"}
-    `}
-  >
-    Individuel
-  </div>
-
-</div>
-
-            <h3 className="mt-6 font-semibold">NIVEAUX DISPONIBLES</h3>
-
-            <div className="grid grid-cols-2 gap-4 mt-3">
-
-            <div className="bg-gray-100 p-4 rounded-xl">
-  A1 • {typeCours === "individuel" ? "700 DH" : "540 DH"}
-</div>
-
-<div className="bg-gray-100 p-4 rounded-xl">
-  A2 • {typeCours === "individuel" ? "750 DH" : "580 DH"}
-</div>
-
-<div className="bg-gray-100 p-4 rounded-xl">
-  B1 • {typeCours === "individuel" ? "800 DH" : "600 DH"}
-</div>
-
-<div className="bg-gray-100 p-4 rounded-xl">
-  B2 • {typeCours === "individuel" ? "900 DH" : "680 DH"}
-</div>
-
-</div>
-
-            <h3 className="mt-6 font-semibold">HORAIRES DISPONIBLES</h3>
-
-            <div className="grid grid-cols-2 gap-4 mt-3">
-
-  {typeCours === "groupe" ? (
-    <>
-      <div className="bg-gray-100 p-3 rounded-xl">Lun 17:00 - 19:00</div>
-      <div className="bg-gray-100 p-3 rounded-xl">Mer 18:00 - 20:00</div>
-      <div className="bg-gray-100 p-3 rounded-xl">Sam 10:00 - 12:00</div>
-    </>
-  ) : (
-    <>
-      <div className="bg-gray-100 p-3 rounded-xl">Lun 09:00 - 18:00</div>
-      <div className="bg-gray-100 p-3 rounded-xl">Mar 09:00 - 18:00</div>
-      <div className="bg-gray-100 p-3 rounded-xl">Jeu 09:00 - 18:00</div>
-    </>
-  )}
-
-</div>
-            
-            
-            <button
-                onClick={() => setShowPayment(true)}
-                className="mt-6 w-full bg-black text-white py-3 rounded-xl"
-            >
-                Réserver
-            </button>
-
           </div>
 
+          {/* Navigation */}
+          <nav>
+            <ul className="space-y-4 mb-6">
+              <li>
+                <Link
+                  to="/"
+                  className="
+                  flex items-center gap-3
+                  text-gray-600
+                  font-medium
+                  rounded-2xl
+                  px-5 py-4
+                  hover:bg-[#E09010]
+                  transition-all duration-200
+                  "
+                >
+                  <LayoutGrid size={22} />
+                  <span>Accueil</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/apprendre"
+                  className="
+                  flex items-center gap-3
+                  text-gray-600
+                  font-medium
+                  rounded-2xl
+                  px-5 py-4
+                  hover:bg-[#E09010]
+                  transition-all duration-200
+                  "
+                >
+                  <BookOpen size={22} />
+                  <span>Apprendre</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/ProfList"
+                  className="
+                  flex items-center gap-3
+                  bg-[#F5A623]
+                  text-gray-900
+                  font-bold
+                  rounded-2xl
+                  px-5 py-4
+                  hover:bg-[#E09010]
+                  transition-all duration-200
+                  "
+                >
+                  <GraduationCap size={22} />
+                  <span>Cours</span>
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/progression"
+                  className="
+                  flex items-center justify-between
+                  text-gray-600
+                  font-medium
+                  rounded-2xl
+                  px-5 py-4
+                  hover:bg-[#E09010]
+                  transition-all duration-200
+                  "
+                >
+                  <div className="flex items-center gap-3">
+                    <TrendingUp size={22} />
+                    <span>Progression</span>
+                  </div>
+
+                  <span className="w-3 h-3 rounded-full bg-pink-500"></span>
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </div>
-      )}
 
-      {showPayment && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        {/* Compte */}
+        <div>
+          <Link
+            to="/compte"
+            className="
+            flex items-center gap-3
+            text-gray-600
+            font-medium
+            rounded-2xl
+            px-5 py-4
+            hover:bg-[#E09010]
+            transition-all duration-200
+            "
+          >
+            <User size={22} />
+            <span>Compte</span>
+          </Link>
+        </div>
+      </aside>
 
-    <div className="bg-white w-[600px] rounded-3xl p-6 relative">
-
-      
-      <button
-        onClick={() => setShowPayment(false)}
-        className="absolute top-4 right-4 text-xl"
-      >
-        ✕
-      </button>
-
-      {/* TITLE */}
-      <h2 className="text-2xl font-bold mb-2">Paiement</h2>
-      <p className="text-gray-500 mb-6">
-        Cours avec Sarah Bennani · Niveau A2
-      </p>
-
-      {/* CHOIX */}
-      <div className="flex gap-4 mb-6">
-
-        {/* HEURE */}
-        <div
-          onClick={() => setModePaiement("heure")}
-          className={`flex-1 p-4 rounded-2xl border-2 cursor-pointer transition
-            ${modePaiement === "heure"
-              ? "bg-green-200 border-black"
-              : "bg-white border-gray-200"}
-          `}
+      {/* Contenu à droite */}
+      <div className="relative flex-1 lg:ml-72 rounded-3xl bg-[#f7f7fc] border-x-2 border-gray-300 p-8 py-14 px-3">
+        <button
+          onClick={() => navigate("/ness")}
+          className="absolute top-4 right-4 w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-200 transition"
         >
-          <p className="text-sm text-gray-500">À L'HEURE</p>
-          <p className="text-xl font-bold">75 DH</p>
+          ✕
+        </button>
+
+        <h1 className="text-3xl font-bold text-center mb-8">
+          Nos professeurs
+        </h1>
+
+        {/* Liste des professeurs */}
+        <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {professeurs.length === 0 ? (
+            <p className="text-gray-500">Aucun professeur disponible.</p>
+          ) : (
+            professeurs.map((prof) => (
+              <div
+                key={prof.id}
+                onClick={() => {
+                  setSelectedProf(prof);
+                  setSelectedCours(null);
+                  setTypeCours("groupe");
+                }}
+                className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
+              >
+                <img
+                  src={prof.photo ? `/images/${prof.photo}` : "/images/mariem.png"}
+                  className="w-16 h-16 rounded-full object-cover"
+                  alt="Professeur"
+                />
+
+                <div>
+                  <h2 className="font-semibold text-lg">
+                    {prof.prenom} {prof.nom}
+                  </h2>
+
+                  <p className="text-gray-500 text-sm">
+                    {prof.description || "Professeur d’allemand"}
+                  </p>
+
+                  <div className="flex gap-2 text-sm">
+                    <span className="text-orange-500">⭐ 4.9</span>
+                    <span className="text-gray-400">Professeur vérifié</span>
+                  </div>
+
+                  <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                    Niveaux : {prof.niveaux || "A1, A2"}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
-        {/* MENSUEL */}
-        <div
-          onClick={() => setModePaiement("mensuel")}
-          className={`flex-1 p-4 rounded-2xl border-2 cursor-pointer transition
-            ${modePaiement === "mensuel"
-              ? "bg-green-200 border-black"
-              : "bg-white border-gray-200"}
-          `}
-        >
-          <p className="text-sm text-gray-500">MENSUEL</p>
-          <p className="text-xl font-bold">580 DH</p>
-        </div>
+        {/* Popup professeur */}
+        {selectedProf && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white w-[700px] rounded-3xl p-6 relative">
+              <button
+                onClick={() => setSelectedProf(null)}
+                className="absolute top-4 right-4 text-gray-500 hover:text-black"
+              >
+                ✕
+              </button>
 
+              <div className="flex gap-4 items-center">
+                <img
+                  src={
+                    selectedProf.photo
+                      ? `/images/${selectedProf.photo}`
+                      : "/images/mariem.png"
+                  }
+                  className="w-20 h-20 rounded-xl object-cover"
+                  alt="Professeur"
+                />
+
+                <div>
+                  <h2 className="text-xl font-bold">
+                    {selectedProf.prenom} {selectedProf.nom}
+                  </h2>
+
+                  <p className="text-gray-500">{selectedProf.email}</p>
+
+                  <p className="text-sm text-gray-400">
+                    ⭐ 4.9 • Niveaux : {selectedProf.niveaux}
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-4 text-gray-600">
+                {selectedProf.description ||
+                  "Professeur disponible pour vous accompagner."}
+              </p>
+
+              <h3 className="mt-6 font-semibold">TYPE DE COURS</h3>
+
+              <div className="flex gap-4 mt-3">
+                <div
+                  onClick={() => {
+                    setTypeCours("groupe");
+                    setSelectedCours(null);
+                  }}
+                  className={`px-4 py-2 rounded-xl cursor-pointer transition ${
+                    typeCours === "groupe"
+                      ? "bg-black text-white"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                >
+                  Groupe
+                </div>
+
+                <div
+                  onClick={() => {
+                    setTypeCours("individuel");
+                    setSelectedCours(null);
+                  }}
+                  className={`px-4 py-2 rounded-xl cursor-pointer transition ${
+                    typeCours === "individuel"
+                      ? "bg-black text-white"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                >
+                  Individuel
+                </div>
+
+                <div
+                  onClick={() => {
+                    setTypeCours("en_ligne");
+                    setSelectedCours(null);
+                  }}
+                  className={`px-4 py-2 rounded-xl cursor-pointer transition ${
+                    typeCours === "en_ligne"
+                      ? "bg-black text-white"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  }`}
+                >
+                  En ligne
+                </div>
+              </div>
+
+              <h3 className="mt-6 font-semibold">COURS DISPONIBLES</h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                {coursFiltres.length === 0 ? (
+                  <p className="text-gray-500">
+                    Aucun cours disponible pour ce type.
+                  </p>
+                ) : (
+                  coursFiltres.map((cours) => (
+                    <div
+                      key={cours.id}
+                      onClick={() => setSelectedCours(cours)}
+                      className={`bg-gray-100 p-4 rounded-xl cursor-pointer border-2 ${
+                        selectedCours && selectedCours.id === cours.id
+                          ? "border-black"
+                          : "border-transparent"
+                      }`}
+                    >
+                      <p className="font-bold">Niveau {cours.niveau}</p>
+                      <p>{cours.prix} DT</p>
+                      <p className="text-sm text-gray-600">{cours.horaire}</p>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <button
+                onClick={() => {
+                  if (!selectedCours) {
+                    alert("Choisissez un cours d’abord.");
+                    return;
+                  }
+
+                  setShowPayment(true);
+                }}
+                className="mt-6 w-full bg-black text-white py-3 rounded-xl"
+              >
+                Réserver
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Popup paiement */}
+        {showPayment && selectedCours && selectedProf && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white w-[600px] rounded-3xl p-6 relative">
+              <button
+                onClick={() => setShowPayment(false)}
+                className="absolute top-4 right-4 text-xl"
+              >
+                ✕
+              </button>
+
+              <h2 className="text-2xl font-bold mb-2">Paiement</h2>
+
+              <p className="text-gray-500 mb-6">
+                Cours avec {selectedProf.prenom} {selectedProf.nom} · Niveau{" "}
+                {selectedCours.niveau}
+              </p>
+
+              <div className="flex gap-4 mb-6">
+                <div
+                  onClick={() => setModePaiement("heure")}
+                  className={`flex-1 p-4 rounded-2xl border-2 cursor-pointer transition ${
+                    modePaiement === "heure"
+                      ? "bg-green-200 border-black"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
+                  <p className="text-sm text-gray-500">À L'HEURE</p>
+                  <p className="text-xl font-bold">{selectedCours.prix} DT</p>
+                </div>
+
+                <div
+                  onClick={() => setModePaiement("mensuel")}
+                  className={`flex-1 p-4 rounded-2xl border-2 cursor-pointer transition ${
+                    modePaiement === "mensuel"
+                      ? "bg-green-200 border-black"
+                      : "bg-white border-gray-200"
+                  }`}
+                >
+                  <p className="text-sm text-gray-500">MENSUEL</p>
+                  <p className="text-xl font-bold">
+                    {selectedCours.prix * 4} DT
+                  </p>
+                </div>
+              </div>
+
+              <input
+                placeholder="Nom sur la carte"
+                className="w-full border p-4 rounded-2xl mb-4"
+              />
+
+              <input
+                placeholder="Numéro de carte"
+                className="w-full border p-4 rounded-2xl mb-4"
+              />
+
+              <div className="flex gap-4 mb-4">
+                <input
+                  placeholder="MM/AA"
+                  className="w-1/2 border p-4 rounded-2xl"
+                />
+                <input
+                  placeholder="CVC"
+                  className="w-1/2 border p-4 rounded-2xl"
+                />
+              </div>
+
+              <button
+                onClick={confirmPayment}
+                className="w-full bg-[#070b1f] text-white py-4 rounded-2xl font-semibold"
+              >
+                Payer{" "}
+                {modePaiement === "heure"
+                  ? selectedCours.prix
+                  : selectedCours.prix * 4}{" "}
+                DT
+              </button>
+
+              <p className="text-center text-gray-400 mt-3 text-sm">
+                Paiement sécurisé
+              </p>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* INPUTS */}
-      <input
-        placeholder="Nom sur la carte"
-        className="w-full border p-4 rounded-2xl mb-4"
-      />
-
-      <input
-        placeholder="Numéro de carte"
-        className="w-full border p-4 rounded-2xl mb-4"
-      />
-
-      <div className="flex gap-4 mb-4">
-        <input placeholder="MM/AA" className="w-1/2 border p-4 rounded-2xl" />
-        <input placeholder="CVC" className="w-1/2 border p-4 rounded-2xl" />
-      </div>
-
-      {/* BUTTON */}
-      <button className="w-full bg-[#070b1f] text-white py-4 rounded-2xl font-semibold">
-        Payer {modePaiement === "heure" ? "75 DH" : "580 DH"}
-      </button>
-
-      <p className="text-center text-gray-400 mt-3 text-sm">
-        Paiement sécurisé 
-      </p>
-
     </div>
-  </div>
-)}
-
-    </div>
-
-    
   );
 }

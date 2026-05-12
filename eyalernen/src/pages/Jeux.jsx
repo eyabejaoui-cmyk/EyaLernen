@@ -1,10 +1,36 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Jeux() {
+  const navigate = useNavigate();
+  
   return (
     <div className="h-screen overflow-y-auto rounded-3xl bg-[#f7f7fc] border border-gray-200 p-4 sm:p-8">
-      
-      <div className="max-w-[1000px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <button
+  onClick={() => navigate("/ness")}
+  className="
+  fixed top-4 right-4 z-50
+
+  w-12 h-12
+
+  rounded-full
+  border border-gray-300
+  bg-white
+
+  flex items-center justify-center
+
+  text-gray-700
+
+  shadow-sm
+  hover:bg-gray-100
+
+  transition
+  "
+>
+
+  ✕
+
+</button>
+      <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* 1 */}
        <Link to="/Cafe" className="block">
        <div className="group bg-white border border-gray-200 rounded-3xl shadow-sm p-4 sm:p-5 w-full transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer">
@@ -12,7 +38,7 @@ export default function Jeux() {
       <img
         src="/images/café.png"
         alt="cafe"
-        className="h-[130px] sm:h-[180px]object-contain transition-transform duration-300 group-hover:scale-105"
+        className="h-[130px] sm:h-[180px] object-contain transition-transform duration-300 group-hover:scale-105"
       />
       </div>
 

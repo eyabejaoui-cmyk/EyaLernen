@@ -1,228 +1,356 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff, X } from "lucide-react";
 
+export default function Inscription() {
 
-
-export default function Inscription(){
-    const [step , setStep] = useState(1);
+    const [step, setStep] = useState(1);
 
     const [prenom, setPrenom] = useState("");
     const [nom, setNom] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [age, setAge] = useState("");
-    const [statut, setStatut] = useState("");
-    const [niveau, setNiveau] = useState("");
-    const [langue, setLangue] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [role, setRole] = useState("student");
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // useNavigate vient de react-router-dom
     const navigate = useNavigate();
 
-   
+    const handleNext = () => {
+
+        if (
+            !prenom ||
+            !nom ||
+            !email ||
+            !password ||
+            !confirmPassword
+        ) {
+            alert("Merci de remplir tous les champs");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Les mots de passe ne correspondent pas");
+            return;
+        }
+
+        setStep(2);
+    };
+
     const handleCreateAccount = (e) => {
-  e.preventDefault();
 
-  if (!niveau || !langue) {
-    alert("Merci de remplir tous les champs");
-    return;
-  }
+        e.preventDefault();
 
-  console.log({
-  prenom,
-  nom,
-  email,
-  password,
-  age,
-  statut,
-  niveau,
-  langue
-  });
+        fetch("http://127.0.0.1:8000/register", {
 
-  fetch("http://127.0.0.1:8000/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      prenom: prenom,
-      nom: nom,
-      email: email,
-      password: password,
-      age: age,
-      statut: statut,
-      niveau: niveau,
-      langue: langue
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log(data);
-    alert("Compte créé");
-    navigate("/ness");
-  })
-  .catch(err => {
-    console.error(err);
-    alert("Erreur inscription");
-  });
-};
-        const handleNext = () => {
-           if (step === 1) {
-            if (!prenom || !nom || !email || !password) {
-               alert("Merci de remplir tous les champs");
-               return;
-            }
-        }
+            method: "POST",
 
-            if (step === 2) {
-              if (!age || !statut) {
-              alert("Merci de remplir tous les champs");
-              return;
-            }
-        }
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-             setStep(step + 1);
-        };
-    return(
-      
-      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 bg-[#F4F2EF]">
-        <div className="w-full max-w-xl rounded-[30px] border border-gray-300 items-center p-5 sm:p-8 md:p-10 bg-white ">
-        <div className="leading-7 items-center ">
-            <h1 className="mb-7 text-center text-xl font-bold sm:text-2xl">Créer un compte</h1>
-            <form onSubmit={handleCreateAccount}>
-                {step === 1 && (<> {/* <> fragment </>*/}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> {/* colonne/ ligne*/}
-                <div>
-                    <label className="block mb-1">Prénom</label>
-                    <input 
-                      type="text" 
-                      name="prenom" 
-                      required 
-                      className="w-full border rounded-2xl px-3 py-2 " 
-                      placeholder="Prénom" 
-                      value={prenom}  
-                      onChange={(e) => setPrenom(e.target.value)} 
-                    />
-                </div>
-                <div>
-                  <label className="block mb-1">Nom</label>
-                  <input 
-                    type="text" 
-                    name="nom" 
-                    required 
-                    className="w-full border rounded-2xl px-3 py-2 " placeholder="Nom"
-                    value={nom}
-                    onChange={(e) => setNom(e.target.value)}
-                />
-                </div>
-                </div>
-                <div>
-                    <label className="block mb-1 mt-3">Email</label>
-                    <input 
-                       type="email" 
-                       name="mail" 
-                       required 
-                       className="w-full border rounded-2xl px-3 py-2 mb-4" placeholder="votre@mail.com" value={email}
-                       onChange={(e) => setEmail(e.target.value)}
-                    />
-                </div>
-                <div>
-                  <label className="block mb-1 mt-3">Mot de passe</label>
-                  <input type="password" name="password" required className="w-full border rounded-2xl px-3 py-2 mb-4" placeholder="Mot de passe" 
-                  value={password}
-                    onChange={(e) => setPassword(e.target.value)}/>
-                </div>  </>)}
-                 {step ===2 && (<>
-                <div>
-                    <label>Quel est ton âge ?</label>
-                    <select  
-                      name="age" 
-                      required 
-                      className="w-full border rounded-2xl px-3 py-2 mb-4" 
-                      value={age}
-                      onChange={(e) => setAge(e.target.value)}
-                    >
-                    <option value="">Choisir une tranche d’âge</option>
-                    <option value="-18">Moins de 18 ans</option>
-                    <option value="18-25">18 - 25 ans</option>
-                    <option value="25-35">25 - 35 ans</option>
-                    <option value="35+">Plus de 35 ans</option>
-                    </select>
-                </div>
-                <div>
-                    <label>Quel est ton statut ?</label>
-                    <select 
-                      name="statut" 
-                      required 
-                      className="w-full border rounded-2xl px-3 py-2 mb-4"
-                      value={statut}
-                      onChange={(e) => setStatut(e.target.value)}
-                    > 
-                    <option value="">Choisir un statut</option>
-                    <option value="etudiant">Étudiant</option>
-                    <option value="salarie">Salarié</option>
-                    <option value="demandeur_emploi">Demandeur d’emploi</option>
-                    <option value="autre">Autre</option>
-                    </select>
-                </div></>)}
+            body: JSON.stringify({
 
-                {step === 3 && ( <>
-                <div>
-                    <label>Quel est ton niveau en allemand ?</label>
-                     <select 
-                        name="niveau" 
-                        required 
-                        className="w-full border rounded-2xl px-3 py-2 mb-4 "
-                        value={niveau}
-                        onChange={(e) => setNiveau(e.target.value)}
-                     >
-                       <option value="">Choisir un niveau</option>
-                       <option value="grand_debutant">Grand débutant</option>
-                       <option value="debutant">Débutant</option>
-                       <option value="intermediaire">Intermédiaire</option>
-                       <option value="avance">Avancé</option>
-                     </select>
-                </div>
-                <div>
-                   <label className="block mb-1 mt-3">Dans quelle langue veux-tu les explications ?</label>
-                   <select 
-                       name="langue" 
-                       required className="w-full border rounded-2xl px-3 py-2 mb-4 "
-                       value={langue}
-                       onChange={(e) => setLangue(e.target.value)}
-                    >
-                      <option value="">Choisir une langue</option>
-                      <option value="francais">Français</option>
-                      <option value="derja">Derja</option>
-                    </select>
-                </div> </>)}
+                prenom: prenom,
+                nom: nom,
+                email: email,
+                password: password,
+                role: role
 
-                <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-between">
-                    <div>
-                      {step > 1 && ( <button onClick={() => setStep(step - 1)}  type="button" className="rounded-2xl bg-[#F5A623] px-5 py-2 text-white">
-                       Retour</button> )}
+            })
+
+        })
+
+        .then(res => res.json())
+
+        .then(data => {
+
+            console.log(data);
+
+            alert("Compte créé");
+
+            navigate("/ness");
+
+        })
+
+        .catch(err => {
+
+            console.log(err);
+
+            alert("Erreur inscription");
+
+        });
+
+    };
+
+    return (
+
+        <div className="min-h-dvh overflow-y-auto flex justify-center items-start bg-[#F4F2EF] px-4 py-8">
+<button
+  onClick={() => navigate("/#")}
+  className="
+  fixed top-4 right-4 z-50
+
+  w-12 h-12
+
+  rounded-full
+  border border-gray-300
+  bg-white
+
+  flex items-center justify-center
+
+  text-gray-700
+
+  shadow-sm
+  hover:bg-gray-100
+
+  transition
+  "
+>
+
+  <X size={22} />
+
+</button>
+            <div className="w-full max-w-md bg-white rounded-3xl shadow-lg border border-[#E7E2DC] p-5 sm:p-6 md:p-8">
+
+                <div className="text-center mb-8">
+
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                    rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-md">
+                        🦉
                     </div>
 
-                    <div> {step < 3 && ( <button onClick={handleNext}  type="button" className="rounded-2xl bg-[#F5A623] px-5 py-2 text-white"  >
-                      Suivant </button> )}
+                    <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B]">
+                        Créer un compte
+                    </h1>
 
-                      {step === 3 && ( 
-                        <button 
-                          type="submit" 
-                          className="rounded-2xl bg-[#F5A623] px-5 py-2 text-white" 
-                          //onSubmit={handleCreateAccount}
-                        > 
-                          Créer un compte
-                        </button>)}
-                     </div>
+                    <p className="text-sm text-gray-500 mt-2">
+                        Rejoignez la plateforme EyaLlernen
+                    </p>
+
                 </div>
-                
-            </form>
-        </div>
-      </div>
-      </div>
-    
-      
-    );
 
+                <form onSubmit={handleCreateAccount}>
+
+                    {step === 1 && (
+
+                    <>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                                Prénom
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Prénom"
+                                value={prenom}
+                                onChange={(e) => setPrenom(e.target.value)}
+                                className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                                Nom
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Nom"
+                                value={nom}
+                                onChange={(e) => setNom(e.target.value)}
+                                className="w-full text-sm sm:text-base border border-gray-300 rounded-xl px-3 py-3"
+                            />
+
+                        </div>
+
+                        <div className="sm:col-span-2">
+
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                placeholder="votre@email.com"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                            />
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                                Mot de passe
+                            </label>
+
+                            <div className="relative">
+
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Mot de passe"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                                />
+
+                                <span
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-4 cursor-pointer text-gray-500"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff size={20} />
+                                    ) : (
+                                        <Eye size={20} />
+                                    )}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div>
+
+                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                                Confirmation
+                            </label>
+
+                            <div className="relative">
+
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    placeholder="Confirmer"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                                />
+
+                                <span
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-4 top-4 cursor-pointer text-gray-500"
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOff size={20} />
+                                    ) : (
+                                        <Eye size={20} />
+                                    )}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleNext}
+                        className="w-full mt-6 py-3 bg-[#F5A623] text-white rounded-xl font-semibold hover:bg-[#E09010] transition-all duration-200"
+                    >
+                        Suivant
+                    </button>
+
+                    </>
+
+                    )}
+
+                    {step === 2 && (
+
+                    <>
+
+                    <div>
+
+    <label className="block mb-2 text-sm font-medium text-gray-700">
+        Rôle
+    </label>
+
+    <div className="space-y-3">
+
+        <div
+            onClick={() => setRole("student")}
+            className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-200 ${
+                role === "student"
+                ? "border-[#F5A623] bg-[#FFF7E8]"
+                : "border-gray-300"
+            }`}
+        >
+
+            <input
+                type="radio"
+                checked={role === "student"}
+                readOnly
+                className="accent-[#F5A623]"
+            />
+
+            <span className="text-sm sm:text-base">
+                Étudiant
+            </span>
+
+        </div>
+
+        <div
+            onClick={() => setRole("prof")}
+            className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-200 ${
+                role === "prof"
+                ? "border-[#F5A623] bg-[#FFF7E8]"
+                : "border-gray-300"
+            }`}
+        >
+
+            <input
+                type="radio"
+                checked={role === "prof"}
+                readOnly
+                className="accent-[#F5A623]"
+            />
+
+            <span className="text-sm sm:text-base">
+                Professeur
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+                    <div className="flex gap-4 mt-6">
+
+                        <button
+                            type="button"
+                            onClick={() => setStep(1)}
+                            className="w-full py-3 border border-[#F5A623] text-[#F5A623] rounded-xl font-semibold transition-all duration-200"
+                        >
+                            Retour
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="w-full py-3 bg-[#F5A623] text-white rounded-xl font-semibold hover:bg-[#E09010] transition-all duration-200"
+                        >
+                            Créer un compte
+                        </button>
+
+                    </div>
+
+                    </>
+
+                    )}
+
+                </form>
+
+            </div>
+
+        </div>
+    );
 }

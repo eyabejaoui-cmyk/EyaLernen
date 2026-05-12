@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
+
 
 const API = "http://127.0.0.1:8000/chat";
 const TIMEOUT_MS = 30000; // 30s
+
+
 
 export default function Chatbot({ scenario }) {
   const [input, setInput] = useState("");
@@ -39,6 +45,9 @@ export default function Chatbot({ scenario }) {
  //});
 //}
 
+const navigate = useNavigate();
+
+
 function speakText(text) {
   window.speechSynthesis.cancel();
 
@@ -72,7 +81,10 @@ function startVoiceRecognition() {
   }
 
   const recognition = new SpeechRecognition();
-  recognition.lang = "de-DE";
+  recognition.lang =
+  mode === "arabe"
+    ? "ar-TN"
+    : "de-DE";
   recognition.interimResults = false;
   recognition.maxAlternatives = 1;
 
@@ -190,10 +202,10 @@ function startVoiceRecognition() {
       "Content-Type": "application/json"
       },
       body: JSON.stringify({
-      message: text,
-      mode: modeFinal
-
-   })
+      message: input,
+      mode: modeFinal,
+      email: localStorage.getItem("email")
+      })
    });
 
       // Si FastAPI renvoie une erreur, il renvoie souvent JSON {"detail": "..."}
@@ -238,6 +250,33 @@ function startVoiceRecognition() {
 
   return (
     <div className="h-screen flex flex-col bg-[#f8f6f4]">
+
+      <button
+  onClick={() => navigate("/ness")}
+  className="
+  fixed top-4 right-4 z-50
+
+  w-12 h-12
+
+  rounded-full
+  border border-gray-300
+  bg-white
+
+  flex items-center justify-center
+
+  text-gray-700
+
+  shadow-sm
+  hover:bg-gray-100
+
+  transition
+  "
+>
+
+  ✕
+
+</button>
+
       
       <div className="border-b border-[#ddd6cf] flex items-center px-4 sm:px-8 py-3 sm:py-4 bg-[#F4F2EF]">
         <div className="flex items-center gap-4"> 
@@ -247,7 +286,7 @@ function startVoiceRecognition() {
                   🦉
             </div>
             <div>
-              <h2 className="font-semibold text-gray-700">Eya – Assistant IA</h2>
+              <h2 className="font-semibold text-sm sm:text-base text-gray-700">Eya – Assistant IA</h2>
             </div>
         </div>
       </div>
@@ -265,12 +304,12 @@ function startVoiceRecognition() {
             }`}
           >
             {m.role !== "user" && (
-             <div className="w-10 h-10 rounded-full bg-[#F5B63A] flex items-center justify-center text-lg shrink-0">
+             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#F5B63A]">
               🤖
              </div>
             )}
             <div
-              className={`px-5 py-1.5 rounded-[22px] max-w-[80%] sm:max-w-[70%] md:max-w-[620px] whitespace-pre-wrap break-all overflow-hidden text-sm sm:text-[15px] leading-6 sm:leading-8 border shadow-sm ${
+              className={`px-5 py-1.5 rounded-[22px] max-w-[85%] sm:max-w-[75%] md:max-w-[620px] whitespace-pre-wrap break-all overflow-hidden text-sm sm:text-[15px] leading-6 sm:leading-8 border shadow-sm ${
                m.role === "user"
                ? "bg-[#1E3A78] text-white border-[#1E3A78]"
                : "bg-white text-[#0f172a] border-[#ddd6cf]"
@@ -279,7 +318,7 @@ function startVoiceRecognition() {
               {m.text}
             </div>
             {m.role === "user" && (
-            <div className="w-10 h-10 rounded-full bg-[#1E3A78] flex items-center justify-center text-white text-lg shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#1E3A78]">
                👤
             </div>
             )}
@@ -304,7 +343,7 @@ function startVoiceRecognition() {
       value={input}
       onChange={(e) => setInput(e.target.value)}
       placeholder="Schreib etwas auf Deutsch... (Écris quelque chose en allemand...)"
-      className="flex-1 h-10 sm:h-12  rounded-2xl border border-[#ddd6cf] bg-white px-5 text-sm sm:text-[15px] outline-none placeholder:text-[#64748b] transition "
+      className="flex-1 min-w-0 h-10 sm:h-12 rounded-2xl border border-[#ddd6cf] bg-white px-5 text-sm sm:text-[15px] outline-none placeholder:text-[#64748b] transition"
       onKeyDown={(e) => {
         if (e.key === "Enter") {
           e.preventDefault();

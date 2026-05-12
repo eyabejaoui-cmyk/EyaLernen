@@ -6,6 +6,7 @@ import AiBenefits from '../components/AiBenefits'
 import Contact from '../components/Contact'
 import Footer from '../components/Footer'
 import { Link } from "react-router-dom";
+import Subscription from "../pages/Subscription"
 
 
 function Home() {
@@ -15,6 +16,7 @@ function Home() {
       <main>
         <HeroSection />
         <AiTypes />
+        <Subscription />
         <AiBenefits />
         <Contact />
         <Link to="/ness">l Sandi</Link>

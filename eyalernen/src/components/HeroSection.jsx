@@ -26,7 +26,7 @@ function HeroSection() {
               Commencer gratuitement
             </Link>
 
-            <a href="#" className="bg-white text-[#3A2600] border border-[#D9DEE8] font-bold px-7 py-3.5 rounded-2xl hover:bg-[#F5A623] transition ">
+            <a href="Subscription" className="bg-white text-[#3A2600] border border-[#D9DEE8] font-bold px-7 py-3.5 rounded-2xl hover:bg-[#F5A623] transition ">
               Voir les fonctionnalités
             </a>
           </div>
