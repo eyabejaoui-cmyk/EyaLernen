@@ -42,3 +42,74 @@ def update_mode_time(data: dict, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "ok"}
+
+@router.get("/stats/{email}")
+def get_stats(email: str, db: Session = Depends(get_db)):
+
+    stats = db.query(models.UserStats).filter(
+        models.UserStats.email == email
+    ).first()
+
+    if not stats:
+
+        return {
+            "minutes": 0,
+            "messages": 0,
+            "sessions": 0,
+            "discussion": 0,
+            "jeux": 0,
+            "vocabulaire": 0
+        }
+
+    return {
+
+        "minutes": stats.temps_total,
+
+        "messages": stats.total_messages,
+
+        "sessions": stats.total_sessions,
+
+        "discussion": stats.discussion_progress,
+
+        "jeux": stats.jeux_progress,
+
+    }
+
+
+@router.post("/update-time")
+def update_time(data: dict, db: Session = Depends(get_db)):
+
+    stats = db.query(models.UserStats).filter(
+        models.UserStats.email == data["email"]
+    ).first()
+
+    if stats:
+
+        stats.temps_total += data["temps"]
+
+        stats.total_sessions += 1
+
+        db.commit()
+
+    return {"message": "updated"}
+
+
+@router.get("/stats-days/{email}")
+def get_stats_days(email: str, db: Session = Depends(get_db)):
+
+    stats = db.query(models.UserStats).all()
+
+    result = []
+
+    for s in stats:
+
+        result.append({
+
+            "day": f"J{s.id}",
+
+            "messages": s.total_messages,
+
+            "temps": s.temps_total
+        })
+
+    return result

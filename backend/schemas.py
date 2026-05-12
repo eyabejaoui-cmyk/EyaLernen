@@ -2,14 +2,11 @@ from pydantic import BaseModel  #هو اللي يخلي FastAPI يفهم شنو�
  
 
 class UserCreate(BaseModel):
-    prenom : str 
-    nom : str
-    email : str
-    password : str
-    age : str
-    statut : str
-    niveau : str
-    langue : str
+    prenom: str
+    nom: str
+    email: str
+    password: str
+    role: str
 
 class UserLogin(BaseModel):
     email: str

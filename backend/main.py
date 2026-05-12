@@ -7,7 +7,7 @@ from mistralai import Mistral
 #import requests
 from passlib.context import CryptContext
 
-
+from models import Base
 import models 
 from database import Base , engine , SessionLocal ,  get_db
 from schemas import UserCreate , UserLogin
@@ -18,6 +18,9 @@ from schemas import ProfesseurCreate
 from routes_stats import router as stats_router
 
 from routes_admin import router as admin_router
+from routes_subscriptions import router as subscription_router
+
+from routes_professeur import router as professeur_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -35,12 +38,12 @@ def verify_password(plain_password:str ,hashed_password : str):
 
 
 app = FastAPI()  # cœur du backend
-
+Base.metadata.create_all(bind=engine)
 
 
 origins = [
-    "http://localhost:5175",
-    "http://127.0.0.1:5175",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
 ]
 
 app.add_middleware(
@@ -50,6 +53,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(professeur_router)
+
+app.include_router(subscription_router)
 
 Base.metadata.create_all(bind=engine)
 
@@ -63,10 +70,7 @@ def register(data: UserCreate):
         nom=data.nom,
         email=data.email,
         password_hash=hash_password(data.password),
-        age=data.age,
-        statut=data.statut,
-        niveau=data.niveau,
-        langue=data.langue
+        role=data.role
     )
 
     db.add(new_user)
@@ -101,8 +105,8 @@ def login(data: UserLogin):
         ).first()
 
         if user:
-            if data.password == user.password_hash:
-                return {"role": "student"}
+            if verify_password(data.password, user.password_hash):
+                return {"role": user.role}
             else:
                 return {"error": "mot de passe incorrect"}
 
@@ -111,7 +115,7 @@ def login(data: UserLogin):
         ).first()
 
         if prof:
-            if data.password == prof.password_hash:
+            if verify_password(data.password, prof.password_hash):
                 return {"role": "prof"}
             else:
                 return {"error": "mot de passe incorrect"}
@@ -380,6 +384,8 @@ def get_system_prompt(mode: str) ->str:  #la manière de fonctionnement de chatb
         - Nach der kurzen Erklärung kommst du direkt wieder zurück zum Deutschen.
         - Antworte in 1 bis 3 kurzen Sätzen."""
 
+     
+
      return """Du bist EyaLernenBot, ein freundlicher, geduldiger und motivierender Deutschlehrer und Gesprächspartner für Anfänger auf Niveau A1/A2.
 
         REGELN:
@@ -450,6 +456,10 @@ def get_system_prompt(mode: str) ->str:  #la manière de fonctionnement de chatb
         - Beispiele für den Stil: "ما فما حتى مشكل", "تو نفسرلك", "بشوية بشوية", "شنوة معناها", "عاود قلي"."""
 
 
+     
+
+
+
 @app.post("/chat")
 def chat(req: Chat):
     try:
@@ -476,17 +486,17 @@ def chat(req: Chat):
 
         db = SessionLocal()
 
-        # 🔥 history
+        #  history
         history = db.query(models.Message).order_by(models.Message.id.desc()).limit(5).all()
 
-        # 🔥 corrections
+        #  corrections
         corrections = db.query(models.DerjaCorrection).all()
 
         correction_text = ""
         for c in corrections:
             correction_text += f"{c.wrong} -> {c.correct}\n"
 
-        # 🔥 learning instruction
+        
         learning_instruction = f"""
         Apprends des messages précédents.
 
@@ -497,38 +507,38 @@ def chat(req: Chat):
         Ne répète pas les erreurs.
         """
 
-        # 🔥 messages
+        
         chat_messages = [
             {"role": "system", "content": system},
             {"role": "system", "content": learning_instruction}
         ]
 
-        # 🔥 ajouter history
-        for msg in reversed(history):
-            chat_messages.append({"role": "user", "content": msg.user_message})
-            chat_messages.append({"role": "assistant", "content": msg.bot_response})
+        
+        #for msg in reversed(history):
+            #chat_messages.append({"role": "user", "content": msg.user_message})
+            #chat_messages.append({"role": "assistant", "content": msg.bot_response})
 
-        # 🔥 ajouter message actuel (مرة واحدة فقط)
+        
         chat_messages.append({
             "role": "user",
             "content": user_message
         })
 
-        # 🔥 appel Mistral
+        
         resp = client.chat.complete(
-            model="mistral-small-latest",
+            model="open-mistral-7b", #mistral-small-latest
             messages=chat_messages
         )
 
         bot_reply = resp.choices[0].message.content
 
-        # 🔥 تنظيف الرد
+       
         bot_reply = bot_reply.replace("*", "")
         bot_reply = bot_reply.replace("**", "")
 
         bot_reply = re.sub(r"[^\w\s.,?!äöüÄÖÜß']", '', bot_reply)
 
-        # تعلم بسيط جدا
+
         if "الصحيح" in req.message:
            new_corr = models.DerjaCorrection(
              wrong=bot_reply,
@@ -537,7 +547,7 @@ def chat(req: Chat):
            db.add(new_corr)
            db.commit()
 
-        # 🔥 stockage
+        
         new_message = models.Message(
             user_message=req.message,
             bot_response=bot_reply
@@ -545,15 +555,30 @@ def chat(req: Chat):
 
         db.add(new_message)
         db.commit()
-        db.close()
+        stats = db.query(models.UserStats).filter(
+            models.UserStats.email == "test@gmail.com"
+        ).first()
 
-        return {"response": bot_reply}
+        if stats:
+
+            stats.total_messages += 1
+
+            if req.mode == "chat":
+                stats.discussion_progress += 1
+
+            if "roleplay" in req.mode:
+                stats.jeux_progress += 1
+
+            db.commit()
+            db.close()
+
+            return {"response": bot_reply}
 
     except Exception as e:
         print("ERREUR =", e)
-        return {"response": str(e)}
+    return {"response": str(e)}
     
-
+        
 from fastapi.responses import FileResponse
 from gtts import gTTS
 import uuid
@@ -578,3 +603,4 @@ def update(data: ProfesseurCreate):
 
 #route admin
 app.include_router(admin_router)
+app.include_router(stats_router)
