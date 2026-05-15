@@ -1,13 +1,18 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy import Column, func
+from sqlalchemy.orm import Session
 
-from database import SessionLocal
+from database import SessionLocal, get_db
 from models import User, Message, StatistiquesUtilisateur, StatistiquesMode
 
 
 
 router = APIRouter()
+
+router = APIRouter(
+    tags=["Admin"]
+)
 
 class TempsData(BaseModel):
     email: str
@@ -120,3 +125,17 @@ def get_modes():
         {"mode": "Jeux", "minutes": jeux},
         {"mode": "Mots", "minutes": mots},
     ]
+
+@router.get("/admin/etudiants")
+def get_etudiants(db: Session = Depends(get_db)):
+    etudiants = db.query(User).all()
+    return etudiants
+
+
+@router.get("/admin/professeurs")
+def get_professeurs(db: Session = Depends(get_db)):
+    professeurs = db.query(User).filter(
+        User.role.in_(["prof", "Professeur"])
+    ).all()
+
+    return professeurs

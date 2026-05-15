@@ -22,6 +22,8 @@ from routes_subscriptions import router as subscription_router
 
 from routes_professeur import router as professeur_router
 
+from routes_user import router as user_router
+
 models.Base.metadata.create_all(bind=engine)
 
 
@@ -55,6 +57,7 @@ app.add_middleware(
 )
 
 app.include_router(professeur_router)
+
 
 app.include_router(subscription_router)
 
@@ -604,3 +607,4 @@ def update(data: ProfesseurCreate):
 #route admin
 app.include_router(admin_router)
 app.include_router(stats_router)
+app.include_router(user_router)
