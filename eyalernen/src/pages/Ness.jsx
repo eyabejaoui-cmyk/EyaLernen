@@ -35,7 +35,7 @@ export default function Ness() {
   useEffect(() => {
 
 //const email = localStorage.getItem("email");
-const email = "dhie@gmail.com";
+const email = localStorage.getItem("email");
 console.log("EMAIL =", email);
 
 fetch(`http://127.0.0.1:8000/stats/${email}`)
@@ -66,7 +66,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
   
   
   return (
-  <div className="flex min-h-screen bg-[#f5f5fb]">
+  <div className="flex min-h-screen bg-[#F8F6F0]">
 
     {/* bouton menu mobile */}
     <button
@@ -79,8 +79,9 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
       lg:hidden
 
-      bg-white
-      border border-gray-200
+      bg-[#1F1F1F]
+        border border-[#333333]
+      text-white
 
       p-3
       rounded-xl
@@ -99,8 +100,8 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
       w-72
 
-      bg-[#F4F2EF]
-      border-r border-gray-200
+      bg-[#1F1F1F]
+border-r border-[#333333]
 
       flex flex-col justify-between
 
@@ -127,26 +128,24 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
         {/* logo */}
         <div className="mb-12">
 
-          <div className="flex items-center gap-3 px-6 py-3 rounded-2xl">
-
-            <div
-              className="
-              w-12 h-12
+          <div className="flex items-center gap-3">
+          <div
+            className="
+              w-11 h-11
               bg-gradient-to-br from-[#F5A623] to-[#E09010]
-              rounded-[14px]
+              rounded-2xl
               flex items-center justify-center
               text-2xl
-              shadow-[0_4px_16px_rgba(245,166,35,0.4)]
-              "
-            >
-              🦉
-            </div>
+              shadow-[0_4px_16px_rgba(245,166,35,0.35)]
+            "
+          >
+          🦉
+          </div>
 
-            <span className="text-3xl font-black tracking-tight">
-              <span className="text-gray-900">Eya</span>
-              <span className="text-gray-900">Lernen</span>
-            </span>
-
+          <div className="flex items-center">
+            <span className="text-3xl font-black text-[#FFC107]">Eya</span>
+            <span className="text-3xl font-black text-white">Lernen</span>
+          </div>
           </div>
 
         </div>
@@ -162,11 +161,12 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
                 to="/"
                 className="
                 flex items-center gap-3
-                text-gray-600
+                text-gray-300
                 font-medium
                 rounded-2xl
                 px-5 py-4
-                hover:bg-[#E09010]
+                hover:bg-[#FFC107]
+              hover:text-black
                 transition-all duration-200
                 "
               >
@@ -184,14 +184,15 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
             <li>
 
               <Link
-                to="/apprendre"
+                to="/ness"
                 className="
                 flex items-center gap-3
-                text-gray-600
+                text-gray-300
                 font-medium
                 rounded-2xl
                 px-5 py-4
-                hover:bg-[#E09010]
+                hover:bg-[#FFC107]
+              hover:text-black
                 transition-all duration-200
                 "
               >
@@ -212,11 +213,12 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
                 to="/ProfList"
                 className="
                 flex items-center gap-3
-                text-gray-600
+                text-gray-300
                 font-medium
                 rounded-2xl
                 px-5 py-4
-                hover:bg-[#E09010]
+                hover:bg-[#FFC107]
+hover:text-black
                 transition-all duration-200
                 "
               >
@@ -231,17 +233,18 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
             </li>
 
-            <li>
+           <li>
 
               <Link
                 to="/progression"
                 className="
                 flex items-center justify-between
-                text-gray-600
+                text-gray-300
                 font-medium
                 rounded-2xl
                 px-5 py-4
-                hover:bg-[#E09010]
+                hover:bg-[#FFC107]
+hover:text-black
                 transition-all duration-200
                 "
               >
@@ -256,7 +259,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                 </div>
 
-                <span className="w-3 h-3 rounded-full bg-pink-500"></span>
+                <span className="w-3 h-3 rounded-full bg-red-600"></span>
 
               </Link>
 
@@ -275,11 +278,12 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
           to="/compte"
           className="
           flex items-center gap-3
-          text-gray-600
+          text-gray-300
           font-medium
           rounded-2xl
           px-5 py-4
-          hover:bg-[#E09010]
+          hover:bg-[#FFC107]
+          hover:text-black
           transition-all duration-200
           "
         >
@@ -298,7 +302,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
       <main className="w-full p-3 sm:p-4 lg:p-10 lg:ml-72">
 
-  <div className="h-full rounded-3xl bg-[#f7f7fc] border border-gray-200 p-4 sm:p-6 lg:p-8">
+  <div className="h-full rounded-3xl bg-white border border-[#EFE7D8] p-4 sm:p-6 lg:p-8">
 
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 h-full">
 
@@ -309,7 +313,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
           {/* Discussion */}
           <Link to="/chatbot" className="block">
 
-            <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)] transition">
+            <div className="bg-white border border-[#EFE7D8] rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.30)] transition">
 
               <div className="flex flex-col lg:flex-row justify-between">
 
@@ -326,11 +330,11 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                   <div className="flex flex-wrap gap-4 mt-4">
 
-                    <span className="text-[13px] px-4 py-1.5 rounded-full text-[#3B4EFF] bg-[#EEEEFF]">
+                    <span className="text-[13px] px-4 py-1.5 rounded-full text-white bg-[#1F1F1F]">
                       #Écriture
                     </span>
 
-                    <span className="text-[13px] px-4 py-1.5 rounded-full text-[#F5A623] bg-[#FFF3DC]">
+                    <span className="text-[13px] px-4 py-1.5 rounded-full text-black bg-[#FFC107]">
                       #Lecture
                     </span>
 
@@ -338,7 +342,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                 </div>
 
-                <div className="w-full lg:w-[280px] bg-[#f4cf4f] rounded-l-[80px] flex items-center justify-center">
+                <div className="w-full lg:w-[280px] bg-[#FFC107] rounded-l-[80px] flex items-center justify-center">
 
                   <img
                     src="/images/discussion.png"
@@ -404,7 +408,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
           {/* Jeux */}
           <Link to="/Jeux">
 
-            <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)] transition">
+            <div className="bg-white border border-[#EFE7D8] rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.30)] transition">
 
               <div className="flex flex-col lg:flex-row justify-between">
 
@@ -420,11 +424,11 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                   <div className="flex flex-wrap gap-4 mt-4">
 
-                    <span className="text-[13px] px-4 py-1.5 rounded-full text-[#3B4EFF] bg-[#EEEEFF]">
+                    <span className="text-[13px] px-4 py-1.5 rounded-full text-white bg-[#DC2626]">
                       #Vocabulaire
                     </span>
 
-                    <span className="text-[13px] px-4 py-1.5 rounded-full text-[#F5A623] bg-[#FFF3DC]">
+                    <span className="text-[13px] px-4 py-1.5 rounded-full text-black bg-[#FFC107]">
                       #Écriture
                     </span>
 
@@ -432,7 +436,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                 </div>
 
-                <div className="w-full lg:w-[280px] bg-[#DDF4C8] rounded-l-[80px] flex items-center justify-center">
+                <div className="w-full lg:w-[280px] bg-[#DC2626] rounded-l-[80px] flex items-center justify-center">
 
                   <img
                     src="/images/mode-appel.png"
@@ -449,9 +453,9 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
           </Link>
 
           {/* Mode mot */}
-          <Link to="/Mots">
+          <Link to="/ChoixThemeMots">
 
-            <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)] transition">
+            <div className="bg-white border border-[#EFE7D8] rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.30)] transition">
 
               <div className="flex flex-col lg:flex-row justify-between">
 
@@ -467,11 +471,11 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                   <div className="flex flex-wrap gap-4 mt-4">
 
-                    <span className="text-[13px] px-4 py-1.5 rounded-full text-[#3B4EFF] bg-[#EEEEFF]">
+                    <span className="text-[13px] px-4 py-1.5 rounded-full text-white bg-[#1F1F1F]">
                       #Vocabulaire
                     </span>
 
-                    <span className="text-[13px] px-4 py-1.5 rounded-full text-[#F5A623] bg-[#FFF3DC]">
+                    <span className="text-[13px] px-4 py-1.5 rounded-full text-white bg-[#DC2626]">
                       #Dialogue
                     </span>
 
@@ -479,7 +483,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
                 </div>
 
-                <div className="w-full lg:w-[280px] bg-[#F7C7C7] rounded-l-[80px] flex items-center justify-center">
+                <div className="w-full lg:w-[280px] bg-[#1F1F1F] rounded-l-[80px] flex items-center justify-center">
 
                   <img
                     src="/images/jeux.png"
@@ -506,7 +510,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
   <div className="sticky top-8 flex flex-col gap-6">
 
     {/* dashboard progression */}
-    <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
+    <div className="bg-white rounded-3xl border border-[#EFE7D8] p-6 shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.25)] transitio">
 
       <div className="flex items-center justify-between mb-6">
 
@@ -520,7 +524,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
           </p>
         </div>
 
-        <div className="w-12 h-12 rounded-2xl bg-[#FFF3DC] flex items-center justify-center text-xl">
+        <div className="w-12 h-12 rounded-2xl bg-[#FFC107] flex items-center justify-center text-xl">
           📈
         </div>
 
@@ -535,7 +539,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
             Discussion
           </span>
 
-          <span className="text-sm font-semibold text-[#F5A623]">
+          <span className="text-sm font-semibold text-[#FFC107]">
             {stats?.discussion}%
           </span>
 
@@ -563,7 +567,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
             Jeux de rôle
           </span>
 
-          <span className="text-sm font-semibold text-[#3B4EFF]">
+          <span className="text-sm font-semibold text-[#DC2626]">
             {stats?.jeux}%
           </span>
 
@@ -572,7 +576,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
         <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
 
           <div
-            className="h-full bg-[#3B4EFF] rounded-full"
+            className="h-full bg-[#DC2626] rounded-full"
             style={{
               width: `${stats?.jeux || 0}%`
             }}
@@ -591,7 +595,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
             Vocabulaire
           </span>
 
-          <span className="text-sm font-semibold text-green-600">
+          <span className="text-sm font-semibold text-[#1F1F1F]">
             {stats?.vocabulaire}%
           </span>
 
@@ -600,7 +604,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
         <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
 
           <div
-            className="h-full bg-green-500 rounded-full"
+            className="h-full bg-[#1F1F1F] rounded-full"
             style={{
               width: `${stats?.vocabulaire || 0}%`
             }}
@@ -614,7 +618,8 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
     {/* dashboard statistiques */}
     
-<div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm">
+<div className="bg-white rounded-3xl border border-[#EFE7D8] p-6 shadow-sm hover:shadow-[0_4px_14px_rgba(220,38,38,0.20)] transition">
+
 
   <div className="flex items-center justify-between mb-6">
 
@@ -630,7 +635,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
     <div
       className="
       w-12 h-12 rounded-2xl
-      bg-red-100
+      bg-[#FFE1E1]
       flex items-center justify-center
       text-xl
       "
@@ -667,7 +672,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
         <Line
   type="monotone"
   dataKey="messages"
-  stroke="#2563EB"
+  stroke="#FFC107"
   strokeWidth={4}
 />
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { LogOut } from "lucide-react";
 
 export default function ProfesseurSpace() {
   const [message, setMessage] = useState("");
@@ -255,19 +256,17 @@ export default function ProfesseurSpace() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F6F4EF] flex">
-      {/* Sidebar */}
-      <aside className="w-72 bg-white border-r border-gray-200 min-h-screen fixed left-0 top-0 hidden md:flex flex-col justify-between px-5 py-6">
+    <div className="min-h-screen bg-[#F8F6F0] flex">
+      <aside className="w-72 bg-[#1F1F1F] border-r border-[#333333] min-h-screen fixed left-0 top-0 hidden md:flex flex-col justify-between px-5 py-6">
         <div>
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-10 px-3">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#F5A623] to-[#E09010] flex items-center justify-center text-xl shadow-[0_4px_16px_rgba(245,166,35,0.35)]">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FFC107] to-[#E0A800] flex items-center justify-center text-xl shadow-[0_4px_16px_rgba(255,193,7,0.35)]">
               🦉
             </div>
 
             <div>
-              <h1 className="text-xl font-bold text-[#1F2937]">
-                EyaLernen
+              <h1 className="text-xl font-bold text-white">
+                <span className="text-[#FFC107]">Eya</span>Lernen
               </h1>
               <p className="text-xs text-gray-400 font-medium">
                 Espace professeur
@@ -275,7 +274,6 @@ export default function ProfesseurSpace() {
             </div>
           </div>
 
-          {/* Menu */}
           <nav className="space-y-3">
             {menuItems.map((item) => (
               <button
@@ -298,8 +296,8 @@ export default function ProfesseurSpace() {
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-left font-medium transition ${
                   activePage === item.key
-                    ? "bg-[#F5A623] text-[#3A2600] shadow-sm"
-                    : "text-gray-600 hover:bg-[#F4F2EF]"
+                    ? "bg-[#FFC107] text-black shadow-sm"
+                    : "text-gray-300 hover:bg-[#FFC107] hover:text-black"
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -309,27 +307,53 @@ export default function ProfesseurSpace() {
           </nav>
         </div>
 
-        <div className="bg-[#F4F2EF] rounded-3xl p-4">
-          <p className="text-sm font-semibold text-[#3A2600]">
+        <div className="bg-[#111111] border border-[#3A2600] rounded-3xl p-4">
+          <p className="text-sm font-semibold text-[#FFC107]">
             Conseil
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             Chargez votre profil avant d’ajouter des cours ou consulter les étudiants.
           </p>
         </div>
+
+        <button
+  onClick={() => {
+    localStorage.removeItem("email");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  }}
+  className="
+  w-full
+  mt-3
+  flex
+  items-center
+  justify-center
+  gap-3
+  text-[#DC2626]
+  font-semibold
+  py-2
+  rounded-xl
+  hover:bg-[#2A1010]
+  transition
+  "
+>
+  <LogOut size={18} strokeWidth={2.2} />
+
+  <span className="w-[1px] h-5 bg-[#DC2626]"></span>
+
+  <span>Déconnexion</span>
+</button>
       </aside>
 
-      {/* Contenu */}
       <main className="flex-1 md:ml-72 p-6">
-        {/* Header */}
-        <div className="bg-white rounded-[28px] p-6 shadow-sm border border-gray-100 mb-6">
+        <div className="bg-white rounded-[28px] p-6 shadow-sm border border-[#EFE7D8] mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold text-[#F5A623] uppercase">
+              <p className="text-xs font-semibold text-[#FFC107] uppercase">
                 Tableau de gestion
               </p>
 
-              <h1 className="text-2xl md:text-3xl font-bold text-[#1F2937] mt-1">
+              <h1 className="text-2xl md:text-3xl font-bold text-[#111111] mt-1">
                 Bonjour {profile.prenom ? profile.prenom : "Professeur"}
               </h1>
 
@@ -340,7 +364,7 @@ export default function ProfesseurSpace() {
 
             <div className="flex items-center gap-4">
               <div className="text-right hidden sm:block">
-                <p className="font-semibold text-[#1F2937]">
+                <p className="font-semibold text-[#111111]">
                   {profile.prenom || "Prénom"} {profile.nom || "Nom"}
                 </p>
                 <p className="text-sm text-gray-500">
@@ -352,10 +376,10 @@ export default function ProfesseurSpace() {
                 <img
                   src={photoPreview}
                   alt="Professeur"
-                  className="w-14 h-14 rounded-2xl object-cover border-4 border-[#F5A623]"
+                  className="w-14 h-14 rounded-2xl object-cover border-4 border-[#FFC107]"
                 />
               ) : (
-                <div className="w-14 h-14 rounded-2xl bg-[#F4F2EF] flex items-center justify-center text-xl">
+                <div className="w-14 h-14 rounded-2xl bg-[#FFF7E0] flex items-center justify-center text-xl">
                   👤
                 </div>
               )}
@@ -363,17 +387,14 @@ export default function ProfesseurSpace() {
           </div>
         </div>
 
-        {/* Message supprimé pour ne pas afficher la grande carte blanche */}
-
-        {/* Dashboard */}
         {activePage === "dashboard" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
                 <p className="text-gray-500 text-sm font-medium">
                   Cours ajoutés
                 </p>
-                <h2 className="text-3xl font-bold text-[#1F2937] mt-2">
+                <h2 className="text-3xl font-bold text-[#111111] mt-2">
                   {courseOffersList.length}
                 </h2>
                 <p className="text-sm text-gray-400 mt-2">
@@ -381,11 +402,11 @@ export default function ProfesseurSpace() {
                 </p>
               </div>
 
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
                 <p className="text-gray-500 text-sm font-medium">
                   Étudiants inscrits
                 </p>
-                <h2 className="text-3xl font-bold text-[#1F2937] mt-2">
+                <h2 className="text-3xl font-bold text-[#111111] mt-2">
                   {reservations.length}
                 </h2>
                 <p className="text-sm text-gray-400 mt-2">
@@ -393,11 +414,11 @@ export default function ProfesseurSpace() {
                 </p>
               </div>
 
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
                 <p className="text-gray-500 text-sm font-medium">
                   Niveaux enseignés
                 </p>
-                <h2 className="text-3xl font-bold text-[#1F2937] mt-2">
+                <h2 className="text-3xl font-bold text-[#111111] mt-2">
                   {niveaux.length}
                 </h2>
                 <p className="text-sm text-gray-400 mt-2">
@@ -407,8 +428,8 @@ export default function ProfesseurSpace() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-                <h2 className="text-xl font-bold text-[#1F2937] mb-3">
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
+                <h2 className="text-xl font-bold text-[#111111] mb-3">
                   Démarrage rapide
                 </h2>
 
@@ -419,14 +440,14 @@ export default function ProfesseurSpace() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => setActivePage("profil")}
-                    className="px-5 py-3 rounded-2xl bg-[#F5A623] text-white font-semibold hover:bg-[#E09010]"
+                    className="px-5 py-3 rounded-2xl bg-[#FFC107] text-black font-semibold hover:bg-[#E0A800]"
                   >
                     Modifier mon profil
                   </button>
 
                   <button
                     onClick={() => setActivePage("cours")}
-                    className="px-5 py-3 rounded-2xl bg-[#1F2937] text-white font-semibold hover:bg-black"
+                    className="px-5 py-3 rounded-2xl bg-[#1F1F1F] text-white font-semibold hover:bg-black"
                   >
                     Ajouter un cours
                   </button>
@@ -436,14 +457,14 @@ export default function ProfesseurSpace() {
                       setActivePage("etudiants");
                       loadReservations();
                     }}
-                    className="px-5 py-3 rounded-2xl bg-[#F4F2EF] text-[#3A2600] font-semibold"
+                    className="px-5 py-3 rounded-2xl bg-[#F8F6F0] text-[#111111] font-semibold border border-[#EFE7D8]"
                   >
                     Voir mes étudiants
                   </button>
                 </div>
               </div>
 
-              <div className="bg-[#1F2937] rounded-3xl p-6 shadow-sm text-white">
+              <div className="bg-[#1F1F1F] rounded-3xl p-6 shadow-sm text-white">
                 <h2 className="text-xl font-bold mb-3">
                   Profil public
                 </h2>
@@ -459,7 +480,7 @@ export default function ProfesseurSpace() {
                   <p className="text-sm text-gray-300 mt-1">
                     {profile.description || "Aucune description pour le moment."}
                   </p>
-                  <p className="text-sm text-[#F5A623] mt-2">
+                  <p className="text-sm text-[#FFC107] mt-2">
                     Niveaux : {niveaux.length > 0 ? niveaux.join(", ") : "Non renseignés"}
                   </p>
                 </div>
@@ -468,11 +489,10 @@ export default function ProfesseurSpace() {
           </div>
         )}
 
-        {/* Profil */}
         {activePage === "profil" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 h-fit">
-              <h2 className="text-lg font-bold text-[#1F2937] mb-5">
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8] h-fit">
+              <h2 className="text-lg font-bold text-[#111111] mb-5">
                 Aperçu du profil
               </h2>
 
@@ -481,15 +501,15 @@ export default function ProfesseurSpace() {
                   <img
                     src={photoPreview}
                     alt="Photo professeur"
-                    className="w-28 h-28 rounded-3xl object-cover border-4 border-[#F5A623] mb-4"
+                    className="w-28 h-28 rounded-3xl object-cover border-4 border-[#FFC107] mb-4"
                   />
                 ) : (
-                  <div className="w-28 h-28 rounded-3xl bg-[#F4F2EF] flex items-center justify-center text-gray-400 mb-4">
+                  <div className="w-28 h-28 rounded-3xl bg-[#FFF7E0] flex items-center justify-center text-gray-400 mb-4">
                     Photo
                   </div>
                 )}
 
-                <h3 className="text-xl font-bold text-[#1F2937]">
+                <h3 className="text-xl font-bold text-[#111111]">
                   {profile.prenom || "Prénom"} {profile.nom || "Nom"}
                 </h3>
 
@@ -503,14 +523,14 @@ export default function ProfesseurSpace() {
 
                 <div className="flex flex-wrap gap-2 justify-center mt-4">
                   {niveaux.length === 0 ? (
-                    <span className="px-3 py-1 bg-[#F4F2EF] rounded-full text-sm text-gray-500">
+                    <span className="px-3 py-1 bg-[#F8F6F0] rounded-full text-sm text-gray-500">
                       Aucun niveau
                     </span>
                   ) : (
                     niveaux.map((niveau) => (
                       <span
                         key={niveau}
-                        className="px-3 py-1 bg-orange-100 text-[#E09010] rounded-full text-sm font-semibold"
+                        className="px-3 py-1 bg-[#FFF7E0] text-[#111111] rounded-full text-sm font-semibold"
                       >
                         {niveau}
                       </span>
@@ -520,8 +540,8 @@ export default function ProfesseurSpace() {
               </div>
             </div>
 
-            <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
-              <h2 className="text-xl font-bold text-[#1F2937] mb-1">
+            <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
+              <h2 className="text-xl font-bold text-[#111111] mb-1">
                 Informations du professeur
               </h2>
 
@@ -538,7 +558,7 @@ export default function ProfesseurSpace() {
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoChange}
-                  className="w-full p-3 border border-gray-200 rounded-2xl bg-[#F9FAFB]"
+                  className="w-full p-3 border border-[#EFE7D8] rounded-2xl bg-[#F8F6F0]"
                 />
               </div>
 
@@ -548,7 +568,7 @@ export default function ProfesseurSpace() {
                   placeholder="Nom"
                   value={profile.nom}
                   onChange={handleProfileChange}
-                  className="p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                  className="p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                 />
 
                 <input
@@ -556,7 +576,7 @@ export default function ProfesseurSpace() {
                   placeholder="Prénom"
                   value={profile.prenom}
                   onChange={handleProfileChange}
-                  className="p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                  className="p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                 />
 
                 <input
@@ -564,7 +584,7 @@ export default function ProfesseurSpace() {
                   placeholder="Numéro de téléphone"
                   value={profile.telephone}
                   onChange={handleProfileChange}
-                  className="p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                  className="p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                 />
 
                 <input
@@ -572,7 +592,7 @@ export default function ProfesseurSpace() {
                   placeholder="Email"
                   value={profile.email}
                   onChange={handleProfileChange}
-                  className="p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                  className="p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                 />
 
                 <textarea
@@ -580,12 +600,12 @@ export default function ProfesseurSpace() {
                   placeholder="Description courte du professeur"
                   value={profile.description}
                   onChange={handleProfileChange}
-                  className="p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB] md:col-span-2 min-h-[120px]"
+                  className="p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0] md:col-span-2 min-h-[120px]"
                 />
               </div>
 
               <div className="mt-6">
-                <h3 className="font-bold text-[#1F2937] mb-3">
+                <h3 className="font-bold text-[#111111] mb-3">
                   Niveaux enseignés
                 </h3>
 
@@ -595,8 +615,8 @@ export default function ProfesseurSpace() {
                       key={niveau}
                       className={`flex items-center gap-2 px-4 py-3 rounded-2xl cursor-pointer font-semibold ${
                         niveaux.includes(niveau)
-                          ? "bg-[#F5A623] text-white"
-                          : "bg-[#F4F2EF] text-gray-600"
+                          ? "bg-[#FFC107] text-black"
+                          : "bg-[#F8F6F0] text-gray-600"
                       }`}
                     >
                       <input
@@ -614,14 +634,14 @@ export default function ProfesseurSpace() {
               <div className="flex flex-wrap gap-3 mt-8">
                 <button
                   onClick={saveProfile}
-                  className="px-6 py-3 bg-[#F5A623] text-white rounded-2xl font-semibold hover:bg-[#E09010] transition"
+                  className="px-6 py-3 bg-[#FFC107] text-black rounded-2xl font-semibold hover:bg-[#E0A800] transition"
                 >
                   Enregistrer le profil
                 </button>
 
                 <button
                   onClick={loadProfile}
-                  className="px-6 py-3 bg-[#1F2937] text-white rounded-2xl font-semibold hover:bg-black transition"
+                  className="px-6 py-3 bg-[#1F1F1F] text-white rounded-2xl font-semibold hover:bg-black transition"
                 >
                   Charger mon profil
                 </button>
@@ -630,13 +650,12 @@ export default function ProfesseurSpace() {
           </div>
         )}
 
-        {/* Cours */}
         {activePage === "cours" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+            <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
                 <div>
-                  <h2 className="text-xl font-bold text-[#1F2937]">
+                  <h2 className="text-xl font-bold text-[#111111]">
                     Mes cours
                   </h2>
                   <p className="text-sm text-gray-500">
@@ -652,14 +671,14 @@ export default function ProfesseurSpace() {
                       loadCourses(id);
                     }
                   }}
-                  className="px-5 py-3 rounded-2xl bg-[#F4F2EF] text-[#3A2600] font-semibold"
+                  className="px-5 py-3 rounded-2xl bg-[#F8F6F0] text-[#111111] font-semibold border border-[#EFE7D8]"
                 >
                   Actualiser
                 </button>
               </div>
 
               {courseOffersList.length === 0 ? (
-                <div className="bg-[#F9FAFB] rounded-3xl p-8 text-center">
+                <div className="bg-[#F8F6F0] rounded-3xl p-8 text-center">
                   <p className="text-gray-500">
                     Aucun cours ajouté pour le moment.
                   </p>
@@ -669,15 +688,15 @@ export default function ProfesseurSpace() {
                   {courseOffersList.map((item, index) => (
                     <div
                       key={index}
-                      className="bg-[#F9FAFB] rounded-3xl p-5 border border-gray-100"
+                      className="bg-[#F8F6F0] rounded-3xl p-5 border border-[#EFE7D8]"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <span className="px-3 py-1 bg-orange-100 text-[#E09010] rounded-full text-sm font-semibold">
+                          <span className="px-3 py-1 bg-[#FFF7E0] text-[#111111] rounded-full text-sm font-semibold">
                             Niveau {item.niveau}
                           </span>
 
-                          <h3 className="text-lg font-bold text-[#1F2937] mt-4">
+                          <h3 className="text-lg font-bold text-[#111111] mt-4">
                             {item.type_cours === "individuel"
                               ? "Cours individuel"
                               : item.type_cours === "groupe"
@@ -690,7 +709,7 @@ export default function ProfesseurSpace() {
                           </p>
                         </div>
 
-                        <p className="text-xl font-bold text-[#1F2937]">
+                        <p className="text-xl font-bold text-[#DC2626]">
                           {item.prix} DT
                         </p>
                       </div>
@@ -707,8 +726,8 @@ export default function ProfesseurSpace() {
               )}
             </div>
 
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 h-fit">
-              <h2 className="text-xl font-bold text-[#1F2937] mb-2">
+            <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8] h-fit">
+              <h2 className="text-xl font-bold text-[#111111] mb-2">
                 Ajouter un cours
               </h2>
 
@@ -718,7 +737,7 @@ export default function ProfesseurSpace() {
 
               <button
                 onClick={() => setShowCourseForm(!showCourseForm)}
-                className="w-full py-3 bg-[#F5A623] text-white rounded-2xl font-semibold hover:bg-[#E09010] transition"
+                className="w-full py-3 bg-[#FFC107] text-black rounded-2xl font-semibold hover:bg-[#E0A800] transition"
               >
                 {showCourseForm ? "Fermer le formulaire" : "Ajouter un cours"}
               </button>
@@ -729,7 +748,7 @@ export default function ProfesseurSpace() {
                     name="niveau"
                     value={courseOffer.niveau}
                     onChange={handleCourseOfferChange}
-                    className="w-full p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                    className="w-full p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                   >
                     <option value="A1">A1</option>
                     <option value="A2">A2</option>
@@ -741,7 +760,7 @@ export default function ProfesseurSpace() {
                     name="type_cours"
                     value={courseOffer.type_cours}
                     onChange={handleCourseOfferChange}
-                    className="w-full p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                    className="w-full p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                   >
                     <option value="individuel">Cours individuel</option>
                     <option value="groupe">Cours groupe</option>
@@ -754,7 +773,7 @@ export default function ProfesseurSpace() {
                     placeholder="Prix en DT"
                     value={courseOffer.prix}
                     onChange={handleCourseOfferChange}
-                    className="w-full p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                    className="w-full p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                   />
 
                   <input
@@ -762,12 +781,12 @@ export default function ProfesseurSpace() {
                     placeholder="Ex : Lundi 18h - 20h"
                     value={courseOffer.horaire}
                     onChange={handleCourseOfferChange}
-                    className="w-full p-4 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#F5A623] bg-[#F9FAFB]"
+                    className="w-full p-4 border border-[#EFE7D8] rounded-2xl outline-none focus:ring-2 focus:ring-[#FFC107] bg-[#F8F6F0]"
                   />
 
                   <button
                     onClick={addCourseOffer}
-                    className="w-full py-3 bg-[#1F2937] text-white rounded-2xl font-semibold hover:bg-black transition"
+                    className="w-full py-3 bg-[#1F1F1F] text-white rounded-2xl font-semibold hover:bg-black transition"
                   >
                     Enregistrer le cours
                   </button>
@@ -777,12 +796,11 @@ export default function ProfesseurSpace() {
           </div>
         )}
 
-        {/* Étudiants */}
         {activePage === "etudiants" && (
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#EFE7D8]">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
               <div>
-                <h2 className="text-xl font-bold text-[#1F2937]">
+                <h2 className="text-xl font-bold text-[#111111]">
                   Mes étudiants
                 </h2>
                 <p className="text-sm text-gray-500">
@@ -792,14 +810,14 @@ export default function ProfesseurSpace() {
 
               <button
                 onClick={loadReservations}
-                className="px-5 py-3 bg-[#F5A623] text-white rounded-2xl font-semibold hover:bg-[#E09010] transition"
+                className="px-5 py-3 bg-[#FFC107] text-black rounded-2xl font-semibold hover:bg-[#E0A800] transition"
               >
                 Charger les réservations
               </button>
             </div>
 
             {reservations.length === 0 ? (
-              <div className="bg-[#F9FAFB] rounded-3xl p-8 text-center">
+              <div className="bg-[#F8F6F0] rounded-3xl p-8 text-center">
                 <p className="text-gray-500">
                   Aucun étudiant inscrit pour le moment.
                 </p>
@@ -809,21 +827,21 @@ export default function ProfesseurSpace() {
                 {reservations.map((reservation) => (
                   <div
                     key={reservation.id}
-                    className="bg-[#F9FAFB] rounded-3xl p-5 border border-gray-100"
+                    className="bg-[#F8F6F0] rounded-3xl p-5 border border-[#EFE7D8]"
                   >
                     <div className="flex items-center justify-between mb-4">
-                      <div className="w-11 h-11 rounded-2xl bg-[#F5A623] text-white flex items-center justify-center font-bold">
+                      <div className="w-11 h-11 rounded-2xl bg-[#FFC107] text-black flex items-center justify-center font-bold">
                         {reservation.user_email
                           ? reservation.user_email[0].toUpperCase()
                           : "E"}
                       </div>
 
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                      <span className="px-3 py-1 bg-[#FFE1E1] text-[#DC2626] rounded-full text-sm font-semibold">
                         {reservation.status}
                       </span>
                     </div>
 
-                    <p className="font-bold text-[#1F2937]">
+                    <p className="font-bold text-[#111111]">
                       {reservation.user_email}
                     </p>
 

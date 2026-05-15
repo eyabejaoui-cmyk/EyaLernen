@@ -8,7 +8,6 @@ import Jeux from "./pages/Jeux";
 import Cafe from "./pages/Cafe";
 import Restaurant from "./pages/Restaurant";
 import Supermarche from "./pages/Supermarche";
-import ProfForm from "./pages/ProfForm";
 import ProfList from "./pages/ProfList";
 import Mots from "./pages/Mots";
 import ModeAppel from "./pages/ModeAppel";
@@ -16,6 +15,8 @@ import Admin from "./pages/Admin";
 import UserProfile from "./pages/UserProfile";
 import Subscription from "./pages/Subscription";
 import ProfesseurSpace from "./pages/ProfesseurSpace";
+import Compte from "./pages/Compte";
+import ChoixThemeMots from "./pages/ChoixThemeMots";
 
 export default function App() {
   return (
@@ -29,14 +30,16 @@ export default function App() {
       <Route path="/Cafe" element={<Cafe />} />
       <Route path="/Restaurant" element={<Restaurant />} />
       <Route path="/Supermarche" element={<Supermarche />} />
-      <Route path="/ProfForm" element={<ProfForm />} />
       <Route path="/ProfList" element={<ProfList />} />
       <Route path="/Mots" element={<Mots />} />
       <Route path="/ness/ModeAppel" element={<ModeAppel />} />
       <Route path="/Admin" element={<Admin />} />
       <Route path="/profile" element={<UserProfile />} />
       <Route path="/subscription" element={<Subscription />} />
-      <Route path="/professeur-space" element={<ProfesseurSpace />} />
+      <Route path="/ProfesseurSpace" element={<ProfesseurSpace />} />
+      <Route path="/compte" element={<Compte />} />
+      <Route path="/ChoixThemeMots" element={<ChoixThemeMots />} />
+      <Route path="/ness/ChoixThemeMots" element={<ChoixThemeMots />} />
 
 
     </Routes>

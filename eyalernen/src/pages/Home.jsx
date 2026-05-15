@@ -21,11 +21,11 @@ function Home() {
         <Contact />
         <Link to="/ness">l Sandi</Link>
         <Link to="/chatbot">Ouvrir Chatbot</Link>
-        <Link to="/ProfForm">rabi isahel</Link>
-        <Link to="DashboardPro">3la alah</Link>
-        <Link to="Admin">ya lahwi</Link>
-        <Link to="Dashboard">wwooohhh</Link>
-
+        
+        
+        <Link to="/Admin">ya lahwi</Link>
+        
+        <Link to="/ProfesseurSpace">wohhh</Link>
       </main>
       <Footer />
     </>

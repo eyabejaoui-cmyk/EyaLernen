@@ -4,32 +4,66 @@ function Navbar() {
 
   const [mobileMenuOpen, setMobileMenuOpen ]= useState(false);
   return (
-    <nav className=" border-r border-gray-200 backdrop-blur-md shadow-sm fixed w-full z-50 py-2">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-[#222222] shadow-sm">
+
+        {/* les 3 bandes Allemagne */}
+        <div className="w-full">
+        <div className="h-[6px] bg-black"></div>
+        <div className="h-[6px] bg-red-600"></div>
+        <div className="h-[6px] bg-[#FFC107]"></div>
+        </div>
+      
+      
+      
       <div className="app-container flex justify-between items-center h-16">
         {/* logo */}
-         <div>
-           <div className="flex items-center gap-3  px-6 py-3 rounded-2xl">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#F5A623] to-[#E09010]
-                 rounded-[14px] flex items-center justify-center text-2xl
-                 shadow-[0_4px_16px_rgba(245,166,35,0.4)]" >
-                  🦉
-            </div>
-                   {/* */}
-            <span className=" text-3xl font-black tracking-tight">
-            <span className="text-gray-900">Eya</span>
-            <span className="text-gray-900">Lernen</span>
-             </span>
-           </div>
+         <div className="flex items-center gap-3">
+          <div
+            className="
+              w-11 h-11
+              bg-gradient-to-br from-[#F5A623] to-[#E09010]
+              rounded-2xl
+              flex items-center justify-center
+              text-2xl
+              shadow-[0_4px_16px_rgba(245,166,35,0.35)]
+            "
+          >
+          🦉
           </div>
 
-        <div className="hidden md:flex items-center space-x-8">
-          <a href="/login" className="text-sm font-extrabold px-5 py-2.5 rounded-xl border
-               border-[#667085] text-[#3A2600] bg-transparent
-               hover:border-white/5 hover:bg-[#E09010] transition">Se connecter</a>
-          <a href="/inscription" className="text-sm font-extrabold px-5 py-2.5 rounded-xl
-               bg-[#F5A623] text-[#3A2600]
-               shadow-[0_4px_14px_rgba(245,166,35,0.35)]
-               hover:bg-[#E09010] transition">Commencer</a>
+          <div className="flex items-center">
+            <span className="text-3xl font-black text-[#FFC107]">Eya</span>
+            <span className="text-3xl font-black text-white">Lernen</span>
+          </div>
+          </div>
+
+        <div className="hidden md:flex items-center space-x-6">
+           <a
+            href="/login"
+            className="
+            text-sm font-extrabold
+            px-6 py-3
+            rounded-2xl
+            border border-[#667085]
+          text-white
+            bg-transparent
+          hover:border-[#FFC107]
+          hover:text-[#FFC107]
+            transition
+           "
+           >Se connecter</a>
+          <a href="/inscription" 
+          className="text-sm font-extrabold 
+          px-6 py-3 
+          rounded-2xl
+          bg-[#FFC107]
+          text-black
+          shadow-[0_4px_14px_rgba(245,166,35,0.35)]
+        hover:bg-[#E09010]
+          transition
+         "
+         >            
+          Commencer</a>
         </div>
 
         {/*telephone*/}

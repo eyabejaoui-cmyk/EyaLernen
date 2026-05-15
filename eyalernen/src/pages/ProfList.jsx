@@ -89,15 +89,15 @@ export default function ProfList() {
     : [];
 
   return (
-    <div className="min-h-screen bg-[#f7f7fc] flex">
+    <div className="min-h-screen bg-[#F8F6F0] flex">
       {/* Sidebar gauche */}
       <aside
         className={`
         fixed top-0 left-0 z-50
         h-screen
         w-72
-        bg-[#F4F2EF]
-        border-r border-gray-200
+        bg-[#1F1F1F]
+        border-r border-[#333333]
         flex flex-col justify-between
         px-6 py-8
         transition-transform duration-300
@@ -107,7 +107,7 @@ export default function ProfList() {
       >
         <button
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden self-end mb-4"
+          className="lg:hidden self-end mb-4 text-gray-300 hover:text-[#FFC107]"
         >
           <X size={24} />
         </button>
@@ -115,23 +115,23 @@ export default function ProfList() {
         <div>
           {/* Logo */}
           <div className="mb-12">
-            <div className="flex items-center gap-3 px-6 py-3 rounded-2xl">
+            <div className="flex items-center gap-3 ">
               <div
                 className="
-                w-12 h-12
+                w-11 h-11
                 bg-gradient-to-br from-[#F5A623] to-[#E09010]
-                rounded-[14px]
+                rounded-2xl
                 flex items-center justify-center
                 text-2xl
-                shadow-[0_4px_16px_rgba(245,166,35,0.4)]
+                shadow-[0_4px_16px_rgba(255,193,7,0.35)]
                 "
               >
                 🦉
               </div>
 
-              <span className="text-3xl font-black tracking-tight">
-                <span className="text-gray-900">Eya</span>
-                <span className="text-gray-900">Lernen</span>
+              <span className="flex items-center">
+                <span className="text-3xl font-black text-[#FFC107]">Eya</span>
+                <span className="text-3xl font-black text-white">Lernen</span>
               </span>
             </div>
           </div>
@@ -144,11 +144,12 @@ export default function ProfList() {
                   to="/"
                   className="
                   flex items-center gap-3
-                  text-gray-600
+                  text-gray-300
                   font-medium
                   rounded-2xl
                   px-5 py-4
-                  hover:bg-[#E09010]
+                  hover:bg-[#FFC107]
+                  hover:text-black
                   transition-all duration-200
                   "
                 >
@@ -159,14 +160,15 @@ export default function ProfList() {
 
               <li>
                 <Link
-                  to="/apprendre"
+                  to="/ness"
                   className="
                   flex items-center gap-3
-                  text-gray-600
+                  text-gray-300
                   font-medium
                   rounded-2xl
                   px-5 py-4
-                  hover:bg-[#E09010]
+                  hover:bg-[#FFC107]
+                  hover:text-black
                   transition-all duration-200
                   "
                 >
@@ -180,12 +182,12 @@ export default function ProfList() {
                   to="/ProfList"
                   className="
                   flex items-center gap-3
-                  bg-[#F5A623]
-                  text-gray-900
+                  bg-[#FFC107]
+                  text-black
                   font-bold
                   rounded-2xl
                   px-5 py-4
-                  hover:bg-[#E09010]
+                  hover:bg-[#E0A800]
                   transition-all duration-200
                   "
                 >
@@ -199,11 +201,12 @@ export default function ProfList() {
                   to="/progression"
                   className="
                   flex items-center justify-between
-                  text-gray-600
+                  text-gray-300
                   font-medium
                   rounded-2xl
                   px-5 py-4
-                  hover:bg-[#E09010]
+                  hover:bg-[#FFC107]
+                  hover:text-black
                   transition-all duration-200
                   "
                 >
@@ -212,7 +215,7 @@ export default function ProfList() {
                     <span>Progression</span>
                   </div>
 
-                  <span className="w-3 h-3 rounded-full bg-pink-500"></span>
+                  <span className="w-3 h-3 rounded-full bg-red-600"></span>
                 </Link>
               </li>
             </ul>
@@ -225,11 +228,12 @@ export default function ProfList() {
             to="/compte"
             className="
             flex items-center gap-3
-            text-gray-600
+            text-gray-300
             font-medium
             rounded-2xl
             px-5 py-4
-            hover:bg-[#E09010]
+            hover:bg-[#FFC107]
+            hover:text-black
             transition-all duration-200
             "
           >
@@ -240,22 +244,17 @@ export default function ProfList() {
       </aside>
 
       {/* Contenu à droite */}
-      <div className="relative flex-1 lg:ml-72 rounded-3xl bg-[#f7f7fc] border-x-2 border-gray-300 p-8 py-14 px-3">
-        <button
-          onClick={() => navigate("/ness")}
-          className="absolute top-4 right-4 w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-200 transition"
-        >
-          ✕
-        </button>
+      <div className="relative flex-1 lg:ml-72 rounded-3xl bg-[#F8F6F0] border-x-2 border-[#EFE7D8] p-8 py-14 px-3">
+        
 
-        <h1 className="text-3xl font-bold text-center mb-8">
+        <h1 className="text-3xl font-bold text-center mb-8 text-[#111111]">
           Nos professeurs
         </h1>
 
         {/* Liste des professeurs */}
         <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {professeurs.length === 0 ? (
-            <p className="text-gray-500">Aucun professeur disponible.</p>
+            <p className="text-gray-600">Aucun professeur disponible.</p>
           ) : (
             professeurs.map((prof) => (
               <div
@@ -265,29 +264,29 @@ export default function ProfList() {
                   setSelectedCours(null);
                   setTypeCours("groupe");
                 }}
-                className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm w-full max-w-md cursor-pointer hover:shadow-md transition"
+                className="bg-white rounded-2xl p-4 flex items-center gap-4 border border-[#EFE7D8] shadow-sm w-full max-w-md cursor-pointer hover:shadow-[0_4px_14px_rgba(255,193,7,0.30)] hover:border-[#FFC107] transition"
               >
                 <img
                   src={prof.photo ? `/images/${prof.photo}` : "/images/mariem.png"}
-                  className="w-16 h-16 rounded-full object-cover"
+                  className="w-16 h-16 rounded-full object-cover border border-[#EFE7D8]"
                   alt="Professeur"
                 />
 
                 <div>
-                  <h2 className="font-semibold text-lg">
+                  <h2 className="font-semibold text-lg text-[#111111]">
                     {prof.prenom} {prof.nom}
                   </h2>
 
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-gray-600 text-sm">
                     {prof.description || "Professeur d’allemand"}
                   </p>
 
                   <div className="flex gap-2 text-sm">
-                    <span className="text-orange-500">⭐ 4.9</span>
-                    <span className="text-gray-400">Professeur vérifié</span>
+                    <span className="text-[#FFC107]">⭐ 4.9</span>
+                    <span className="text-gray-500">Professeur vérifié</span>
                   </div>
 
-                  <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                  <span className="bg-[#F1F1F1] text-[#1F1F1F] text-xs px-3 py-1 rounded-full">
                     Niveaux : {prof.niveaux || "A1, A2"}
                   </span>
                 </div>

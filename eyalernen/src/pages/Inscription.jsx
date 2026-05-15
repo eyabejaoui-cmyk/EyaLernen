@@ -67,11 +67,19 @@ export default function Inscription() {
 
         .then(data => {
 
-            console.log(data);
+        console.log(data);
 
-            alert("Compte créé");
+        alert("Compte créé");
 
+        localStorage.setItem("email", email);
+
+        if (role === "student") {
             navigate("/ness");
+        }
+
+        else if (role === "prof") {
+            navigate("/ProfesseurSpace");
+        }
 
         })
 
@@ -87,46 +95,31 @@ export default function Inscription() {
 
     return (
 
-        <div className="min-h-dvh overflow-y-auto flex justify-center items-start bg-[#F4F2EF] px-4 py-8">
-<button
-  onClick={() => navigate("/#")}
-  className="
-  fixed top-4 right-4 z-50
+        <div className="min-h-dvh overflow-y-auto flex justify-center items-start bg-[#171717] px-4 py-8 relative">
 
-  w-12 h-12
+            <div className="absolute top-0 left-0 w-full">
+                <div className="h-[5px] bg-black"></div>
+                <div className="h-[5px] bg-red-600"></div>
+                <div className="h-[5px] bg-[#FFC107]"></div>
+            </div>
 
-  rounded-full
-  border border-gray-300
-  bg-white
 
-  flex items-center justify-center
+            <div className="w-full max-w-md bg-[#0F0F0F] rounded-3xl shadow-lg border border-[#3A2600] p-5 sm:p-6 md:p-8 mt-10">
 
-  text-gray-700
-
-  shadow-sm
-  hover:bg-gray-100
-
-  transition
-  "
->
-
-  <X size={22} />
-
-</button>
-            <div className="w-full max-w-md bg-white rounded-3xl shadow-lg border border-[#E7E2DC] p-5 sm:p-6 md:p-8">
+             
 
                 <div className="text-center mb-8">
 
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-[#FFC107] to-[#E0A800]
                     rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-md">
                         🦉
                     </div>
 
-                    <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B]">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white">
                         Créer un compte
                     </h1>
 
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-gray-400 mt-2">
                         Rejoignez la plateforme EyaLlernen
                     </p>
 
@@ -142,7 +135,7 @@ export default function Inscription() {
 
                         <div>
 
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                            <label className="block mb-2 text-sm font-medium text-gray-400">
                                 Prénom
                             </label>
 
@@ -151,14 +144,14 @@ export default function Inscription() {
                                 placeholder="Prénom"
                                 value={prenom}
                                 onChange={(e) => setPrenom(e.target.value)}
-                                className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                                className="w-full bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                             />
 
                         </div>
 
                         <div>
 
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                            <label className="block mb-2 text-sm font-medium text-gray-400">
                                 Nom
                             </label>
 
@@ -167,14 +160,14 @@ export default function Inscription() {
                                 placeholder="Nom"
                                 value={nom}
                                 onChange={(e) => setNom(e.target.value)}
-                                className="w-full text-sm sm:text-base border border-gray-300 rounded-xl px-3 py-3"
+                                className="w-full text-sm sm:text-base bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                             />
 
                         </div>
 
                         <div className="sm:col-span-2">
 
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                            <label className="block mb-2 text-sm font-medium text-gray-400">
                                 Email
                             </label>
 
@@ -183,14 +176,14 @@ export default function Inscription() {
                                 placeholder="votre@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                                className="w-full bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                             />
 
                         </div>
 
                         <div>
 
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                            <label className="block mb-2 text-sm font-medium text-gray-400">
                                 Mot de passe
                             </label>
 
@@ -201,12 +194,12 @@ export default function Inscription() {
                                     placeholder="Mot de passe"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                                    className="w-full bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                                 />
 
                                 <span
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-4 cursor-pointer text-gray-500"
+                                    className="absolute right-4 top-4 cursor-pointer text-gray-400"
                                 >
                                     {showPassword ? (
                                         <EyeOff size={20} />
@@ -221,7 +214,7 @@ export default function Inscription() {
 
                         <div>
 
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
+                            <label className="block mb-2 text-sm font-medium text-gray-400">
                                 Confirmation
                             </label>
 
@@ -232,12 +225,12 @@ export default function Inscription() {
                                     placeholder="Confirmer"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#F5A623]"
+                                    className="w-full bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                                 />
 
                                 <span
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-4 top-4 cursor-pointer text-gray-500"
+                                    className="absolute right-4 top-4 cursor-pointer text-gray-400"
                                 >
                                     {showConfirmPassword ? (
                                         <EyeOff size={20} />
@@ -255,7 +248,7 @@ export default function Inscription() {
                     <button
                         type="button"
                         onClick={handleNext}
-                        className="w-full mt-6 py-3 bg-[#F5A623] text-white rounded-xl font-semibold hover:bg-[#E09010] transition-all duration-200"
+                        className="w-full mt-6 py-3 bg-[#FFC107] text-black rounded-xl font-bold hover:bg-[#E0A800] transition-all duration-200"
                     >
                         Suivant
                     </button>
@@ -270,7 +263,7 @@ export default function Inscription() {
 
                     <div>
 
-    <label className="block mb-2 text-sm font-medium text-gray-700">
+    <label className="block mb-2 text-sm font-medium text-gray-400">
         Rôle
     </label>
 
@@ -280,8 +273,8 @@ export default function Inscription() {
             onClick={() => setRole("student")}
             className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-200 ${
                 role === "student"
-                ? "border-[#F5A623] bg-[#FFF7E8]"
-                : "border-gray-300"
+                ? "border-[#FFC107] bg-[#1F1A0A] text-[#FFC107]"
+                : "border-[#3A2600] text-gray-400"
             }`}
         >
 
@@ -289,7 +282,7 @@ export default function Inscription() {
                 type="radio"
                 checked={role === "student"}
                 readOnly
-                className="accent-[#F5A623]"
+                className="accent-[#FFC107]"
             />
 
             <span className="text-sm sm:text-base">
@@ -302,8 +295,8 @@ export default function Inscription() {
             onClick={() => setRole("prof")}
             className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all duration-200 ${
                 role === "prof"
-                ? "border-[#F5A623] bg-[#FFF7E8]"
-                : "border-gray-300"
+                ? "border-[#FFC107] bg-[#1F1A0A] text-[#FFC107]"
+                : "border-[#3A2600] text-gray-400"
             }`}
         >
 
@@ -311,7 +304,7 @@ export default function Inscription() {
                 type="radio"
                 checked={role === "prof"}
                 readOnly
-                className="accent-[#F5A623]"
+                className="accent-[#FFC107]"
             />
 
             <span className="text-sm sm:text-base">
@@ -329,14 +322,14 @@ export default function Inscription() {
                         <button
                             type="button"
                             onClick={() => setStep(1)}
-                            className="w-full py-3 border border-[#F5A623] text-[#F5A623] rounded-xl font-semibold transition-all duration-200"
+                            className="w-full py-3 border border-[#FFC107] text-[#FFC107] rounded-xl font-semibold hover:bg-[#1F1F1F] transition-all duration-200"
                         >
                             Retour
                         </button>
 
                         <button
                             type="submit"
-                            className="w-full py-3 bg-[#F5A623] text-white rounded-xl font-semibold hover:bg-[#E09010] transition-all duration-200"
+                            className="w-full py-3 bg-[#FFC107] text-black rounded-xl font-bold hover:bg-[#E0A800] transition-all duration-200"
                         >
                             Créer un compte
                         </button>
@@ -348,7 +341,13 @@ export default function Inscription() {
                     )}
 
                 </form>
-
+                       <button
+                            type="button"
+                            onClick={() => navigate("/")}
+                            className="block mx-auto mt-8 text-center text-sm text-gray-400 hover:text-[#FFC107] transition"
+                        >
+                            ← Retour à l'accueil
+                        </button>
             </div>
 
         </div>

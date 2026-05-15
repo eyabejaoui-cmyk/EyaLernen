@@ -51,8 +51,11 @@ export default function Login() {
                 navigate("/ness");
             }
 
-            else if (data.role === "prof") {
-                navigate("/ProfForm");
+            else if (data.role === "prof" || data.role === "Professeur") {
+                
+                localStorage.setItem("email", email);
+                
+                navigate("/ProfesseurSpace");
             }
 
             else {
@@ -74,59 +77,42 @@ export default function Login() {
 
     return (
 
-        <div className="min-h-screen flex items-center justify-center bg-[#F4F2EF] px-4">
+        <div className="min-h-screen flex items-center justify-center bg-[#171717] px-4 relative">
 
-                <button
-  onClick={() => navigate("/#")}
-  className="
-  fixed top-4 right-4 z-50
+            <div className="absolute top-0 left-0 w-full">
+                <div className="h-[5px] bg-black"></div>
+                <div className="h-[5px] bg-red-600"></div>
+                <div className="h-[5px] bg-[#FFC107]"></div>
+            </div>
 
-  w-12 h-12
-
-  rounded-full
-  border border-gray-300
-  bg-white
-
-  flex items-center justify-center
-
-  text-gray-700
-
-  shadow-sm
-  hover:bg-gray-100
-
-  transition
-  "
->
-
-  <X size={22} />
-
-</button>
+            
 
             <form
                 onSubmit={handleLogin}
-                className="w-full max-w-md bg-white rounded-3xl shadow-lg border border-[#E7E2DC] p-5 sm:p-6 md:p-8"
+                className="w-full max-w-md bg-[#0F0F0F] rounded-3xl shadow-lg border border-[#3A2600] p-5 sm:p-6 md:p-8"
             >
 
                 <div className="flex flex-col items-center mb-8">
 
-                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-[#F5A623] to-[#E09010]
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-[#FFC107] to-[#E0A800]
                     rounded-2xl flex items-center justify-center text-3xl shadow-md mb-4">
                         🦉
                     </div>
 
-                    <h1 className="text-2xl sm:text-3xl font-bold text-[#1E293B]">
-                        Connexion
+                    <h1 className="text-2xl sm:text-3xl font-bold">
+                        <span className="text-[#FFC107]">Eya</span>
+                        <span className="text-white">Lernen</span>
                     </h1>
 
-                    <p className="text-sm text-gray-500 mt-2 text-center">
-                        Connectez-vous à votre plateforme EyaLernen
+                    <p className="text-sm text-gray-400 mt-2 text-center">
+                        Connecte-toi à ton compte
                     </p>
 
                 </div>
 
                 <div className="mb-5">
 
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
                         Email
                     </label>
 
@@ -136,14 +122,14 @@ export default function Login() {
                         placeholder="exemple@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-3 text-sm sm:text-base border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-[#F5A623]"
+                        className="w-full p-3 text-sm sm:text-base bg-[#111111] text-white border border-[#3A2600] rounded-xl outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                     />
 
                 </div>
 
                 <div className="mb-5 relative">
 
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-400 mb-2">
                         Mot de passe
                     </label>
 
@@ -152,12 +138,12 @@ export default function Login() {
                         placeholder="Mot de passe"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="w-full p-3 text-sm sm:text-base border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-[#F5A623]"
+                        className="w-full p-3 text-sm sm:text-base bg-[#111111] text-white border border-[#3A2600] rounded-xl outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                     />
 
                     <span
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-[42px] sm:top-[45px] cursor-pointer text-gray-500"
+                        className="absolute right-4 top-[42px] sm:top-[45px] cursor-pointer text-gray-400"
                     >
                         {showPassword ? (
                             <EyeOff size={20} />
@@ -177,23 +163,32 @@ export default function Login() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 bg-[#F5A623] text-white rounded-xl font-semibold hover:bg-[#E09010] hover:scale-[1.01] transition"
+                    className="w-full py-3 bg-[#FFC107] text-black rounded-xl font-bold hover:bg-[#E0A800] hover:scale-[1.01] transition"
                 >
                     {loading ? "Connexion..." : "Se connecter"}
                 </button>
 
-                <div className="mt-6 text-center text-sm text-gray-500">
+                <div className="mt-6 text-center text-sm text-gray-400">
 
                     Vous n’avez pas de compte ?
 
                     <span
                         onClick={() => navigate("/inscription")}
-                        className="text-[#F5A623] font-semibold cursor-pointer ml-1"
+                        className="text-[#FFC107] font-semibold cursor-pointer ml-1"
                     >
                         Créer un compte
                     </span>
 
                 </div>
+
+
+                <button
+                    type="button"
+                    onClick={() => navigate("/")}
+                    className="w-full mt-4 text-center text-sm text-gray-400 hover:text-[#FFC107] transition"
+                >
+                    ← Retour à l'accueil
+                </button>
 
             </form>
 

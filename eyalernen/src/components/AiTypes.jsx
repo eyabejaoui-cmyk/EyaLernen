@@ -9,10 +9,19 @@ const items = [
   ];
 function AiTypes() {
   return (
-    <div className="bg-[#F4F2EF] py-4">
-    <section id='types' className='app-container py-16 bg-[#F4F2EF]'>
+    <div className="bg-white py-4">
+    <section id='types' className='app-container py-16 bg-white'>
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-black bg-gradient-to-r from-[#5B4B3A] to-[#F5A623] bg-clip-text text-transparent">Fonctionnalités</h2>
+
+        <div className="flex justify-center gap-2 mb-4">
+        <div className="w-8 h-2 bg-black rounded-full"></div>
+        <div className="w-8 h-2 bg-red-600 rounded-full"></div>
+        <div className="w-8 h-2 bg-[#FFC107] rounded-full"></div>
+      </div>
+
+      <h2 className="text-2xl md:text-4xl font-black text-[#111111]">
+          Tout pour apprendre <span className="text-[#FFC107]">l'allemand</span>
+      </h2>
         <p className="section-description text-[#667085] py-2">
           Une plateforme complète combinant intelligence artificielle, gamification et pédagogie moderne.
         </p>
@@ -20,7 +29,9 @@ function AiTypes() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ">
         {items.map((type) => (
-  <article key={type.title} className="ai-type-card hover:shadow-[0_4px_14px_rgba(245,166,35,0.35)] transition">
+  <article key={type.title} className="bg-[#FAFAFA] border
+   border-[#F3F3F3]  rounded-3xl shadow-sm
+   hover:shadow-[0_4px_14px_rgba(245,166,35,0.25)] transition">
     <div className="p-6">
       <div className="flex items-center mb-3">
         <div
