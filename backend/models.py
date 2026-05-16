@@ -158,3 +158,11 @@ class ReservationCours(Base):
     montant = Column(Float)
     status = Column(String(50), default="payé")
     date_reservation = Column(DateTime, default=datetime.utcnow)
+
+class DerjaWord(Base):
+    __tablename__ = "derja_words"
+
+    id = Column(Integer, primary_key=True, index=True)
+    german = Column(String)
+    french = Column(String)
+    derja = Column(String)
