@@ -7,36 +7,170 @@ const TIMEOUT_MS = 30000; // 30s
 export default function Chatbot({ scenario }) {
   const [input, setInput] = useState("");
   const [mode, setMode] = useState("chat");
+  const [voiceLang, setVoiceLang] = useState("de-DE");
+  const [voices, setVoices] = useState([]);
+  
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
   const [messages, setMessages] = useState([
     { role: "bot", text: "Hallo!" },
   ]);
+  
 
   const boxRef = useRef(null);
 
   const navigate = useNavigate();
+  useEffect(() => {
+  function loadVoices() {
+    window.speechSynthesis.getVoices();
+  }
 
-  function speakText(text) {
-    window.speechSynthesis.cancel();
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
 
-    const utterance = new SpeechSynthesisUtterance(text);
+  return () => {
+    window.speechSynthesis.onvoiceschanged = null;
+  };
+}, []);
 
-    const voices = speechSynthesis.getVoices();
 
-    const germanVoice = voices.find(v => v.lang.startsWith("de"));
+  //function speakText(text) {
+    //window.speechSynthesis.cancel();
 
-    if (germanVoice) {
-      utterance.voice = germanVoice;
-      utterance.lang = germanVoice.lang;
+    //const utterance = new SpeechSynthesisUtterance(text);
+
+    //const voices = speechSynthesis.getVoices();
+
+    //const germanVoice = voices.find(v => v.lang.startsWith("de"));
+
+    //if (germanVoice) {
+      //utterance.voice = germanVoice;
+      //utterance.lang = germanVoice.lang;
+    //} else {
+      //utterance.lang = "de-DE";
+    //}
+
+    //utterance.rate = 1.0;
+
+    //window.speechSynthesis.speak(utterance);
+  //}
+
+
+  function detectLangPart(text) {
+  const lower = text.toLowerCase();
+
+  // Arabe / Derja en écriture arabe
+  if (/[\u0600-\u06FF]/.test(text)) {
+    return "ar";
+  }
+
+  // Français simple
+  const frenchWords = [
+    "bonjour",
+    "merci",
+    "français",
+    "explique",
+    "je ",
+    "tu ",
+    "vous ",
+    "nous ",
+    "ça",
+    "c'est",
+    "est-ce",
+    "avec",
+    "pour",
+    "pourquoi",
+    "comment"
+  ];
+
+  if (frenchWords.some((word) => lower.includes(word))) {
+    return "fr";
+  }
+
+  // Par défaut allemand
+  return "de";
+}
+
+function getVoiceByLang(lang) {
+  const allVoices = window.speechSynthesis.getVoices();
+
+  if (lang === "ar") {
+    return (
+      allVoices.find((v) => v.lang === "ar-SA") ||
+      allVoices.find((v) => v.lang === "ar") ||
+      allVoices.find((v) => v.lang.startsWith("Arabic"))
+    );
+  }
+
+  if (lang === "fr") {
+    return (
+      allVoices.find((v) => v.lang === "fr-FR") ||
+      allVoices.find((v) => v.lang.startsWith("fr"))
+    );
+  }
+
+  return (
+    allVoices.find((v) => v.lang === "de-DE") ||
+    allVoices.find((v) => v.lang.startsWith("de"))
+  );
+}
+
+function splitTextByLanguage(text) {
+  // Sépare le texte par ligne ou par ponctuation
+  const parts = text
+    .split(/(?<=[.!؟?])\s+|\n+/)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+
+  return parts.map((part) => ({
+    text: part,
+    lang: detectLangPart(part),
+  }));
+}
+
+function speakText(text) {
+  window.speechSynthesis.cancel();
+
+  const parts = splitTextByLanguage(text);
+
+  let index = 0;
+
+  function speakNext() {
+    if (index >= parts.length) return;
+
+    const part = parts[index];
+    const utterance = new SpeechSynthesisUtterance(part.text);
+
+    const voice = getVoiceByLang(part.lang);
+
+    if (part.lang === "ar") {
+      utterance.lang = voice ? voice.lang : "ar-SA";
+    } else if (part.lang === "fr") {
+      utterance.lang = voice ? voice.lang : "fr-FR";
     } else {
-      utterance.lang = "de-DE";
+      utterance.lang = voice ? voice.lang : "de-DE";
     }
 
-    utterance.rate = 1.0;
+    if (voice) {
+      utterance.voice = voice;
+    }
+
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
+    utterance.onend = () => {
+      index++;
+      speakNext();
+    };
 
     window.speechSynthesis.speak(utterance);
   }
+
+  speakNext();
+}
+
+
+
 
   function startVoiceRecognition() {
     const SpeechRecognition =
@@ -48,10 +182,7 @@ export default function Chatbot({ scenario }) {
     }
 
     const recognition = new SpeechRecognition();
-    recognition.lang =
-      mode === "arabe"
-        ? "ar-TN"
-        : "de-DE";
+    recognition.lang = voiceLang;
 
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
@@ -156,11 +287,12 @@ export default function Chatbot({ scenario }) {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          message: input,
+         body: JSON.stringify({
+          message: text,
           mode: modeFinal,
           email: localStorage.getItem("email")
-        })
+        }),
+          signal: controller.signal
       });
 
       if (!res.ok) {
@@ -180,7 +312,13 @@ export default function Chatbot({ scenario }) {
       }
 
       const data = await res.json();
-      const botReply = data.response ?? "(Réponse vide)";
+
+      if (!data) {
+        throw new Error("Le backend a retourné une réponse vide.");
+      }
+
+      const botReply = data.response || "(Réponse vide)";
+
       setMessages((prev) => [...prev, { role: "bot", text: botReply }]);
       speakText(botReply);
     } catch (err) {
@@ -290,6 +428,16 @@ export default function Chatbot({ scenario }) {
 
       <div className="border-t border-[#3A2600] px-3 sm:px-6 py-3 sm:py-4 bg-[#171717]">
         <div className="max-w-4xl w-full mx-auto flex items-center gap-2 sm:gap-4">
+
+          <select
+            value={voiceLang}
+            onChange={(e) => setVoiceLang(e.target.value)}
+            className="h-10 sm:h-12 rounded-2xl border border-[#3A2600] bg-[#0F0F0F] px-3 text-sm text-[#FFC107] outline-none"
+          >
+            <option value="de-DE">DE</option>
+            <option value="fr-FR">FR</option>
+            <option value="ar-TN">AR</option>
+          </select>
 
           <button
             onClick={startVoiceRecognition}

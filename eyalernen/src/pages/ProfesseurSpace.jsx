@@ -764,7 +764,7 @@ export default function ProfesseurSpace() {
                   >
                     <option value="individuel">Cours individuel</option>
                     <option value="groupe">Cours groupe</option>
-                    <option value="en_ligne">Cours en ligne</option>
+                  
                   </select>
 
                   <input
