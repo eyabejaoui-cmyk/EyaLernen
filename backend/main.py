@@ -24,6 +24,8 @@ from routes_professeur import router as professeur_router
 
 from routes_user import router as user_router
 
+from datetime import datetime, timedelta
+
 models.Base.metadata.create_all(bind=engine)
 
 
@@ -149,6 +151,7 @@ client = Mistral(api_key=api_key)
 class Chat(BaseModel):
     message: str
     mode: str = "chat" 
+    explanation_language: str = "auto"
  
 @app.get("/")
 def home():
@@ -400,21 +403,44 @@ def get_system_prompt(mode: str) ->str:  #la manière de fonctionnement de chatb
         - Wiederhole nicht die Frage des Benutzers.
         - Keine langen Erklärungen, kein Schulbuchstil.
         - Korrigiere Fehler sanft und natürlich in deiner Antwort.
+
+        KORREKTUR:
+        - Wenn der Benutzer auf Deutsch schreibt und die Phrase falsch ist, korrigiere immer sofort.
+        - Die Korrektur muss am Anfang der Antwort stehen.
+        - Verwende immer diese Struktur:
+        Der richtige Satz ist: ...
+        - Danach antworte normal mit einer kurzen Frage.
+        - Wenn der Benutzer nur ein falsches Wort schreibt, gib den richtigen Artikel oder die richtige Form.
+        - Wenn der Artikel falsch ist, korrigiere den Artikel direkt, zum Beispiel: Der richtige Satz ist: die Routine.
+        - Erkläre nicht lange.
+        - Verwende einfache deutsche Sätze Niveau A1/A2.
+
         - Motiviere den Benutzer immer weiterzumachen.
         - Stelle manchmal eine kurze, einfache Frage, um das Gespräch fortzusetzen.
         - Verwende keine Emojis.
         - Sprich menschlich, ruhig, klar und freundlich.
         - Die Tabelle derja_words ist nur ein Wörterbuch, um Derja zu verstehen.
-        - Verwende Derja niemals in der Antwort, außer wenn der Benutzer ausdrücklich "fasarli b derja", "b derja", "tounsi" oder "derja" sagt.
+        - Wenn der Benutzer auf Derja oder Arabisch schreibt, antworte kurz auf tunesischer Derja.
+        - Wenn der Benutzer auf Deutsch schreibt, antworte auf einfachem Deutsch.
+        - Wenn der Benutzer auf Französisch schreibt, antworte kurz auf Französisch.
+        - Wenn der Benutzer Derja benutzt, musst du ihn verstehen und natürlich auf Derja antworten.
         - Verwende Französisch niemals in der Antwort, außer wenn der Benutzer ausdrücklich auf Französisch schreibt oder "explique en français" sagt.
         - Wenn der Benutzer nur auf Deutsch schreibt, antworte nur auf Deutsch.
         - Wenn der Benutzer "ja", "nein", "hallo", "guten morgen" oder kurze deutsche Wörter schreibt, antworte nur auf Deutsch.
+        - Die Buttons Derja und Französisch ändern nur die Sprache der Erklärung.
+        - Wenn der Benutzer ein normales deutsches Wort schreibt, zum Beispiel "hallo", antworte immer auf Deutsch, auch wenn der Button Derja oder Französisch gewählt ist.
+        - Wenn der Benutzer nicht versteht oder eine Erklärung verlangt, dann benutze die gewählte Erklärungssprache.
 
+        
         SPRACHE:
-        - Sprich standardmäßig auf Deutsch (A1/A2-Niveau).
-        - Verwende tunesische Derja nur, wenn der Benutzer ausdrücklich danach fragt.
+        - Sprich standardmäßig auf Deutsch, wenn der Benutzer Deutsch schreibt.
+        - Wenn der Benutzer auf Derja oder Arabisch schreibt, antworte auf echter tunesischer Derja.
+        - Wenn der Benutzer sagt "mafhemtech", "ma fhemtch", "ما فهمتش", "kifech", "aawed" oder "عاود", antworte direkt auf Derja und hilf ihm kurz.
+        - Danach kannst du eine sehr einfache deutsche Frage stellen, wenn es nützlich ist.
         - Der Benutzer fragt nach Derja, wenn er schreibt: "fasarli b derja", "b derja", "derja", "tounsi", "fassarli".
-        - Wenn der Benutzer nicht nach Derja fragt, antworte nicht auf Derja.
+        - Wenn der Benutzer auf Derja oder Arabisch schreibt, antworte auf echter tunesischer Derja.
+        - Wenn der Benutzer auf Deutsch schreibt, antworte auf einfachem Deutsch.
+        - Wenn der Benutzer auf Französisch schreibt, antworte kurz auf Französisch.
         - Wenn der Benutzer auf Deutsch schreibt, antworte auf einfachem Deutsch.
         - Wenn der Benutzer auf Französisch schreibt, antworte kurz auf Französisch.
         - Verwende nur einfache deutsche Wörter.
@@ -425,7 +451,21 @@ def get_system_prompt(mode: str) ->str:  #la manière de fonctionnement de chatb
         - Wenn möglich, gib ein sehr einfaches Beispiel.
         - Wenn der Benutzer auf Französisch schreibt oder Wörter wie "explique" oder "en français" benutzt: antworte kurz auf Französisch, dann kehre zu Deutsch zurück.
         - Wenn der Benutzer ausdrücklich "fasarli b derja", "b derja", "derja", "tounsi" oder "fassarli" sagt, erkläre kurz auf echter tunesischer Derja.
-        - Wenn der Benutzer nur "mafhemtech", "kifech" oder "aawed" sagt, antworte nicht automatisch auf Derja. Antworte einfach auf Deutsch, außer er sagt auch "b derja".
+        - Wenn der Benutzer sagt "mafhemtech", "ma fhemtch", "ما فهمتش", "mafhemtch", "kifech", "aawed" oder "عاود", bedeutet das: Der Benutzer versteht nicht.
+        - In diesem Fall erkläre sehr kurz auf tunesischer Derja, maximal 1 Satz.
+        - Danach stelle eine einfache Frage auf Deutsch.".
+        - Wenn der Benutzer eine arabische oder tunesische Begrüßung oder Verabschiedung schreibt, zum Beispiel "على السلامة", "السلام", "عسلامة", antworte freundlich auf einfachem Deutsch.
+        - Beende die Konversation nicht sofort.
+        - Stelle danach eine kurze Frage, um das Lernen fortzusetzen. 
+
+        DERJA / ARABISCH:
+        - Wenn der Benutzer auf Derja oder Arabisch schreibt, antworte auf echter tunesischer Derja.
+        - Verwende einfache, natürliche tunesische Derja.
+        - Schreibe Derja in arabischer Schrift.
+        - Wenn der Benutzer sagt "ما فهمتش", "mafhemtech", "kifech", "aawed", "عاود", erkläre direkt auf Derja.
+        - Wenn der Benutzer schreibt "على السلامة", "عسلامة", "السلام عليكم", antworte natürlich auf Derja.
+        - Beende die Konversation nicht direkt.
+        - Frage kurz, ob der Benutzer weiter üben möchte.
 
         TUNESISCHE DERJA – REGELN:
         - Verwende echte tunesische Derja, wie ein junger Mensch in Tunesien spricht.
@@ -439,6 +479,31 @@ def get_system_prompt(mode: str) ->str:  #la manière de fonctionnement de chatb
 
      
 
+def is_explanation_request(text: str):
+    text = text.lower().strip()
+
+    explanation_words = [
+        "ما فهمتش",
+        "مفهمتش",
+        "mafhemtech",
+        "mafhemtch",
+        "ma fhemtch",
+        "je ne comprends pas",
+        "j'ai pas compris",
+        "explique",
+        "expliquer",
+        "comment",
+        "pourquoi",
+        "fasarli",
+        "fassarli",
+        "ich verstehe nicht",
+        "nicht verstanden",
+        "kifech",
+        "aawed",
+        "عاود"
+    ]
+
+    return any(word in text for word in explanation_words)
 
 
 @app.post("/chat")
@@ -448,23 +513,90 @@ def chat(req: Chat):
 
         user_text = req.message.lower().strip()
 
-        needs_derja = any(word in user_text for word in [
+        explanation_language = req.explanation_language
+
+        arabic_pattern = re.search(r"[\u0600-\u06FF]", req.message)
+
+        needs_derja = arabic_pattern or any(word in user_text for word in [
             "fasarli b derja",
             "fassarli b derja",
+            "fasarli",
+            "fassarli",
             "b derja",
             "derja",
             "tounsi",
             "tunisien",
-            "explique en derja"
+            "explique en derja",
+            "mafhemtech",
+            "mafhemtch",
+            "ma fhemtch",
+            "kifech",
+            "aawed"
         ])
 
         user_message = req.message
 
-        if needs_derja:
+        explanation_language = req.explanation_language
+        wants_explanation = is_explanation_request(req.message)
+
+        if wants_explanation and explanation_language == "derja":
             user_message = (
                 req.message +
-                "\n\nErkläre sehr kurz auf echter tunesischer Derja. "
-                "Wenn die Frage nicht klar ist, frage zuerst: شنوة الكلمة ولا الجملة اللي تحب نفسرهالك؟ "
+                "\n\nLe choix de l'utilisateur est Derja. "
+                "Tu dois donner seulement l'explication en vraie Derja tunisienne simple. "
+                "Si l'utilisateur demande une traduction en allemand, donne aussi la phrase allemande correcte. "
+                "Réponds court, maximum 2 phrases."
+            )
+
+        elif wants_explanation and explanation_language == "fr":
+            user_message = (
+                req.message +
+                "\n\nLe choix de l'utilisateur est Français. "
+                "Tu dois donner seulement l'explication en français simple. "
+                "Si l'utilisateur demande une traduction en allemand, donne aussi la phrase allemande correcte. "
+                "Réponds court, maximum 2 phrases."
+            )
+
+        elif wants_explanation and explanation_language == "auto":
+            if arabic_pattern:
+                user_message = (
+                    req.message +
+                    "\n\nL'utilisateur écrit en Derja ou en arabe. "
+                    "Explique très brièvement en Derja tunisienne simple. "
+                    "Si utile, donne aussi un exemple très simple en allemand. "
+                    "Réponds maximum en 2 phrases."
+                )
+
+            elif any(word in user_text for word in [
+                "je ", "tu ", "vous ", "nous ",
+                "comment", "pourquoi",
+                "explique", "français",
+                "je ne comprends pas",
+                "j'ai pas compris"
+            ]):
+                user_message = (
+                    req.message +
+                    "\n\nL'utilisateur écrit en français. "
+                    "Explique très brièvement en français simple. "
+                    "Si utile, donne aussi un exemple très simple en allemand. "
+                    "Réponds maximum en 2 phrases."
+                )
+
+            else:
+                user_message = (
+                    req.message +
+                    "\n\nL'utilisateur écrit en allemand ou veut apprendre l'allemand. "
+                    "Réponds uniquement en allemand simple niveau A1/A2. "
+                    "Corrige la phrase si elle est incorrecte. "
+                    "Réponds maximum en 2 phrases."
+                )
+
+        elif needs_derja:
+            user_message = (
+                req.message +
+                "\n\nDer Benutzer schreibt auf Derja oder Arabisch. "
+                "Antworte kurz und natürlich auf tunesischer Derja. "
+                "Wenn es um Deutschlernen geht, gib auch ein einfaches deutsches Beispiel. "
                 "Antworte maximal in 1 oder 2 Sätzen."
             )
 
@@ -488,23 +620,20 @@ def chat(req: Chat):
             derja_words_text += f"Deutsch: {w.german} | Français: {w.french} | Derja: {w.derja}\n"
         
         learning_instruction = f"""
-        Apprends des messages précédents.
-
-        Utilise toujours ces corrections:
-        {correction_text}
-
-        Voici un dictionnaire allemand / français / derja pour comprendre la Derja:
+        Voici une base de mots Derja / Français / Allemand:
         {derja_words_text}
 
-        Règles importantes:
-        - Wenn der Benutzer fragt "kifech n9ol ... b allemand", suche das Derja-Wort nach "n9ol" in der Tabelle und gib die deutsche Übersetzung.
-        - Antworte nicht auf das Wort "kifech", sondern auf das Wort nach "n9ol".
-        - Le dictionnaire sert seulement à comprendre les mots en Derja.
-        - Ne réponds pas en Derja sauf si l'utilisateur demande clairement Derja.
-        - Ne réponds pas en français sauf si l'utilisateur écrit en français ou demande le français.
-        - Si l'utilisateur écrit en allemand, réponds uniquement en allemand.
-        - Si l'utilisateur écrit "ja", continue normalement en allemand.
-        - Ne mélange pas allemand, français et Derja dans la même réponse.
+        Règles:
+        - Cette base est une aide pour apprendre et comprendre la Derja tunisienne.
+        - Tu n'es pas obligé d'utiliser la base dans chaque réponse.
+        - Utilise la base seulement si elle aide à comprendre le message de l'utilisateur.
+        - Si un mot de l'utilisateur existe dans la base, tu peux utiliser sa traduction pour mieux comprendre.
+        - Si l'utilisateur demande "kifech n9ol ... b allemand", cherche dans la base si le mot existe.
+        - Si le mot existe, donne la traduction allemande.
+        - Si le mot n'existe pas, réponds normalement avec tes connaissances.
+        - Si l'utilisateur choisit Derja comme langue d'explication, explique en Derja tunisienne simple.
+        - Si l'utilisateur choisit Français comme langue d'explication, explique en français simple.
+        - Si l'utilisateur écrit en allemand, réponds en allemand simple A1/A2.
         - Réponds court, maximum 2 phrases.
         """
 

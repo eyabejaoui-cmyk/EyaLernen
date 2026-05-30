@@ -83,6 +83,7 @@ class StatistiquesMode(Base):
     email_utilisateur = Column(String)
     mode = Column(String)
     temps_passe = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class UserStats(Base):
