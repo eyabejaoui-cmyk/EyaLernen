@@ -132,14 +132,14 @@ export default function Compte() {
             <div className="space-y-3 mb-6">
               <div className="bg-[#F8F6F0] border border-[#EFE7D8] rounded-2xl p-4">
                 <p className="text-xs text-gray-500">Nom</p>
-                <p className="font-semibold text-[#111111]">
+                <p className="font-semibold text-[#111111] break-all">
                   {user.nom || "-"}
                 </p>
               </div>
 
               <div className="bg-[#F8F6F0] border border-[#EFE7D8] rounded-2xl p-4">
                 <p className="text-xs text-gray-500">Prénom</p>
-                <p className="font-semibold text-[#111111]">
+                <p className="font-semibold text-[#111111] break-all">
                   {user.prenom || "-"}
                 </p>
               </div>

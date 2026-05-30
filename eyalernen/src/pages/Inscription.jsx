@@ -144,7 +144,7 @@ export default function Inscription() {
                                 placeholder="Prénom"
                                 value={prenom}
                                 onChange={(e) => setPrenom(e.target.value)}
-                                className="w-full bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
+                                className="w-full bg-[#111111] text-white border border-[#3A2600] rounded-xl px-3 py-3 pr-12 outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                             />
 
                         </div>
@@ -317,7 +317,7 @@ export default function Inscription() {
 
 </div>
 
-                    <div className="flex gap-4 mt-6">
+                    <div className="flex flex-col sm:flex-row gap-4 mt-6">
 
                         <button
                             type="button"

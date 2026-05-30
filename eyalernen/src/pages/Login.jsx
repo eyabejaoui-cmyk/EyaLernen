@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, X } from "lucide-react";
+{/*sert à créer des variables qui changent dans la page */}
+
+import { useNavigate } from "react-router-dom"; {/*changer de page*/}
+
+import { Eye, EyeOff, X } from "lucide-react";{/*afficher le mot de passe, icône fermeture  */}
 
 export default function Login() {
 
@@ -44,9 +47,18 @@ export default function Login() {
             setLoading(false);
             
             
-            if (data.role === "student") {
+            if (email === "eya@eyalernen.com" && password === "123456789") {
+
+                localStorage.setItem("email", email);
+                localStorage.setItem("role", "admin");
+
+                navigate("/Admin");
+            }
+
+            else if (data.role === "student") {
                 
                 localStorage.setItem("email", email);
+                localStorage.setItem("role", "student");
                 
                 navigate("/ness");
             }
@@ -54,6 +66,7 @@ export default function Login() {
             else if (data.role === "prof" || data.role === "Professeur") {
                 
                 localStorage.setItem("email", email);
+                localStorage.setItem("role", "prof");
                 
                 navigate("/ProfesseurSpace");
             }
@@ -77,7 +90,7 @@ export default function Login() {
 
     return (
 
-        <div className="min-h-screen flex items-center justify-center bg-[#171717] px-4 relative">
+        <div className="min-h-dvh flex items-center justify-center bg-[#171717] px-4 py-8 relative overflow-y-auto">
 
             <div className="absolute top-0 left-0 w-full">
                 <div className="h-[5px] bg-black"></div>
@@ -122,7 +135,7 @@ export default function Login() {
                         placeholder="exemple@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-3 text-sm sm:text-base bg-[#111111] text-white border border-[#3A2600] rounded-xl outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
+                        className="w-full p-3 pr-12 text-sm sm:text-base bg-[#111111] text-white border border-[#3A2600] rounded-xl outline-none focus:ring-2 focus:ring-[#FFC107] placeholder:text-gray-600"
                     />
 
                 </div>
@@ -195,3 +208,4 @@ export default function Login() {
         </div>
     );
 }
+

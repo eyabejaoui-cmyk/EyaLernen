@@ -114,7 +114,7 @@ export default function UserProfile() {
                 Email
               </p>
 
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-lg font-semibold text-gray-800 break-all">
                 {user.email}
               </h3>
             </div>
@@ -200,6 +200,7 @@ export default function UserProfile() {
             <button
               onClick={handleCancelSubscription}
               className="
+              w-full sm:w-auto
               mt-4
               bg-red-500
               hover:bg-red-600
@@ -322,6 +323,7 @@ export default function UserProfile() {
               <button
                 type="submit"
                 className="
+                w-full sm:w-auto
                 bg-[#F5A623]
                 hover:bg-[#E09010]
                 text-white

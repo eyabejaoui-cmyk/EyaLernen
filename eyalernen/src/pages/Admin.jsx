@@ -1,36 +1,32 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { useEffect, useState } from "react"; {/*gérer les données et le chargement*/}
+import { useNavigate } from "react-router-dom";  {/*changer de page*/}
+import { LogOut } from "lucide-react"; {/*icone*/}
 
-
+{/*graphique avec ligne,
+une ligne dans le graphique,graphique en barres,une barre dans le graphique
+axe horizontal,axe vertical
+grille derrière le graphique,
+petite boîte d’information quand on passe la souris
+rend le graphique responsive */}
 import {
-  LineChart, Line, BarChart, Bar,
+  LineChart, 
+  Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer
 } from "recharts";
 
-const recentUsers = [
-  { id: 1, name: "Amira B.", avatar: "AB", color: "#FFC107", mode: "chatbot", action: "Practiced vocab", time: "2m ago" },
-  { id: 2, name: "Youssef K.", avatar: "YK", color: "#DC2626", mode: "jeux", action: "Word match game", time: "5m ago" },
-  { id: 3, name: "Leila M.", avatar: "LM", color: "#111111", mode: "appel", action: "Speaking session", time: "9m ago" },
-  { id: 4, name: "Omar T.", avatar: "OT", color: "#FFC107", mode: "chatbot", action: "Grammar chat", time: "14m ago" },
-  { id: 5, name: "Sara H.", avatar: "SH", color: "#DC2626", mode: "jeux", action: "Sentence builder", time: "18m ago" },
-];
 
-const leaderboard = [
-  { rank: 1, name: "Amira B.", avatar: "AB", color: "#FFC107", xp: 3840, pct: 96 },
-  { rank: 2, name: "Youssef K.", avatar: "YK", color: "#DC2626", xp: 3210, pct: 80 },
-  { rank: 3, name: "Leila M.", avatar: "LM", color: "#111111", xp: 2980, pct: 74 },
-  { rank: 4, name: "Omar T.", avatar: "OT", color: "#FFC107", xp: 2650, pct: 66 },
-  { rank: 5, name: "Sara H.", avatar: "SH", color: "#DC2626", xp: 2340, pct: 58 },
-];
-
+{/*badge
+  ch=fond jaune clair / texte noir
+  j= fond rouge clair / texte rouge*/}
 const modeBadgeStyle = {
-  chatbot: { background: "#FFF7E0", color: "#111111" },
+  
+  chatbot: { background: "#FFF7E0", color: "#111111" }, 
   jeux: { background: "#FFE1E1", color: "#DC2626" },
-  appel: { background: "#F1F1F1", color: "#111111" },
+  
 };
 
+{/*carte*/}
 const cardAccent = {
   blue: "#FFC107",
   green: "#DC2626",
@@ -38,6 +34,7 @@ const cardAccent = {
   purple: "#111111",
 };
 
+{/*fond des icônes dans les carte */}
 const iconBg = {
   blue: "#FFF7E0",
   green: "#FFE1E1",
@@ -45,171 +42,152 @@ const iconBg = {
   purple: "#F1F1F1",
 };
 
+{/*Classement des apprenants */}
 const rankMedal = (r) => {
   if (r === 1) return { symbol: "🥇", color: "#FFC107" };
   if (r === 2) return { symbol: "🥈", color: "#94a3b8" };
   if (r === 3) return { symbol: "🥉", color: "#b45309" };
-  return { symbol: `#${r}`, color: "#94a3b8" };
+  return { symbol: `#${r}`, color: "#94a3b8" }; {/*afficher le nombre gris*/}
 };
 
-// sidebar modifiée
-function Sidebar({ active, onNav }) {
-  const navigate = useNavigate();
+// sidebar composant React
+function Sidebar({ active, onNav }) { //active= le choix de bouton / onNav= show la page
+  
+  const navigate = useNavigate();//changer de page
 
-  const navItems = [
-    {
-      id: "dashboard",
-      label: "Dashboard",
-      icon: "▦",
-      path: "/Admin",
-    },
-    {
-      id: "etudiants",
-      label: "Étudiants",
-      icon: "🎓",
-    },
-    {
-      id: "professeurs",
-      label: "Professeurs",
-      icon: "👨‍🏫",
-    },
-  ];
+  const handleClick = (page) => {
+    onNav(page); //change le contenu affiché selon le bouton cliqué
 
-  const handleClick = (item) => {
-    onNav(item.id);
-
-    if (item.id === "dashboard") {
-      navigate(item.path);
+    if (page === "dashboard") {
+      navigate("/Admin");
     }
   };
 
-  return (
-    <aside
-      style={{
-        width: 220,
-        background: "#1F1F1F",
-        display: "flex",
-        flexDirection: "column",
-        flexShrink: 0,
-        overflowY: "auto",
-      }}
-    >
-      <div
-        style={{
-          padding: "20px 16px 14px",
-          borderBottom: "1px solid #333333",
-        }}
-      >
-        <div
-          style={{
-            fontFamily: "system-ui",
-            fontSize: 18,
-            fontWeight: 700,
-            color: "#FFC107",
-            letterSpacing: -0.3,
-          }}
-        >
+  return (                                                            
+                                                                   
+    <aside className="w-[72px] md:w-[220px] bg-[#1F1F1F] flex flex-col shrink-0 overflow-y-auto transition-all duration-200">
+                                                                       {/*scroll */}
+      {/* Logo / titre */}
+
+      {/*padding-top=space intérieur en haut, padding-bottom=espace intérieur en bas/ b=en bas*/}
+      <div className="pt-[20px] px-4 pb-[14px] border-b border-[#333333]">
+
+                                            {/*texte=en gras     / espace entre les lettres*/}
+        <div className="hidden md:block font-sans text-[18px] font-bold text-[#FFC107] tracking-[-0.3px]">
           EyaLernen
         </div>
 
-        <div
-          style={{
-            fontSize: 10,
-            color: "rgba(255,255,255,0.45)",
-            marginTop: 2,
-            letterSpacing: 1,
-            textTransform: "uppercase",
-          }}
-        >
+        {/* version courte pour mobile */}
+        <div className="md:hidden font-sans text-[18px] font-bold text-[#FFC107] text-center">
+          EL
+        </div>
+                                    {/* margin-top=espace                   majuscules*/}
+        <div className="hidden md:block text-[10px] text-white/45 mt-[2px] tracking-[1px] uppercase">
           Admin Panel
         </div>
       </div>
 
-      <nav style={{ padding: "12px 8px", flex: 1 }}>
-        <div
-          style={{
-            fontSize: 10,
-            color: "rgba(255,255,255,0.4)",
-            letterSpacing: 1,
-            textTransform: "uppercase",
-            padding: "10px 8px 8px",
-            marginTop: 4,
-          }}
-        >
+      {/* Menu */}
+      <nav className="py-3 px-2 flex-1">
+                                    {/*blanc mais trasparent un peu gris clair/  */}
+        <div className="hidden md:block text-[10px] text-white/40 tracking-[1px] uppercase pt-[10px] px-2 pb-2 mt-1">
           Menu
         </div>
 
-        {navItems.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => handleClick(item)}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "10px 10px",
-              borderRadius: 8,
-              cursor: "pointer",
-              marginBottom: 6,
-              fontSize: 13,
-              fontWeight: 500,
-              color: active === item.id ? "#111111" : "rgba(255,255,255,0.75)",
-              background: active === item.id ? "#FFC107" : "transparent",
-              transition: "all 0.15s",
-            }}
-          >
-            <span style={{ fontSize: 14 }}>{item.icon}</span>
-            <span>{item.label}</span>
-          </div>
-        ))}
-            </nav>
+        {/* Dashboard /transition-all duration-150=le changement de couleur plus doux*/}
+        <div
+          onClick={() => handleClick("dashboard")}
 
-      <div
-        style={{
-          padding: "12px 8px 18px",
-        }}
-      >
+          
+          className={`
+            flex items-center 
+            gap-[10px]
+            p-[10px]
+            rounded-lg
+            cursor-pointer
+            mb-[6px]
+            text-[13px]
+            font-medium
+            transition-all duration-150
+            ${active === "dashboard" ? "text-[#111111] bg-[#FFC107]" : "text-white/75 bg-transparent"}
+          `} 
+        >
+          <span className="text-[14px]">▦</span>
+          <span className="hidden md:inline">Dashboard</span>
+        </div>
+
+        {/* Étudiants */}
+        <div
+          onClick={() => handleClick("etudiants")}
+          className={`
+            flex items-center gap-[10px]
+            p-[10px]
+            rounded-lg
+            cursor-pointer
+            mb-[6px]
+            text-[13px]
+            font-medium
+            transition-all duration-150
+            ${active === "etudiants" ? "text-[#111111] bg-[#FFC107]" : "text-white/75 bg-transparent"}
+          `}
+        >
+          <span className="text-[14px]">🎓</span>
+          <span className="hidden md:inline">Étudiants</span>
+        </div>
+
+        {/* Professeurs */}
+        <div
+          onClick={() => handleClick("professeurs")}
+          className={`
+            flex items-center gap-[10px]
+            p-[10px]
+            rounded-lg
+            cursor-pointer
+            mb-[6px]
+            text-[13px]
+            font-medium
+            transition-all duration-150
+            ${active === "professeurs" ? "text-[#111111] bg-[#FFC107]" : "text-white/75 bg-transparent"}
+          `}
+        >
+          <span className="text-[14px]">👨‍🏫</span>
+          <span className="hidden md:inline">Professeurs</span>
+        </div>
+      </nav>
+
+      {/* Déconnexion */}
+      <div className="py-3 px-2 pb-[18px]">
+        
+        {/**/}
         <button
           onClick={() => {
+            // on supprime les informations de connexion stockées dans le navigateur
             localStorage.removeItem("email");
             localStorage.removeItem("user");
-            window.location.href = "/login";
+            window.location.href = "/#";
           }}
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-            color: "#DC2626",
-            background: "transparent",
-            border: "none",
-            padding: "8px 10px",
-            borderRadius: 10,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: "pointer",
-            transition: "all 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "#2A1010";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "transparent";
-          }}
+          className="
+            w-full
+            flex items-center justify-center gap-[10px]
+            text-[#DC2626]
+            bg-transparent
+            border-0
+            py-2 px-[10px]
+            rounded-[10px]
+            text-[13px]
+            font-medium
+            cursor-pointer
+            transition-all duration-150
+            hover:bg-[#2A1010]
+          "
         >
+          {/*lucide-react        contrôle épaisseur*/}
           <LogOut size={17} strokeWidth={2.2} />
 
-          <span
-            style={{
-              width: 1,
-              height: 18,
-              background: "#DC2626",
-              display: "inline-block",
-            }}
-          ></span>
+          {/*largeur*/}
+          <span className="hidden md:inline-block w-[1px] h-[18px] bg-[#DC2626]"></span>
 
-          <span>Déconnexion</span>
+          <span className="hidden md:inline">Déconnexion</span>
         </button>
       </div>
     </aside>
@@ -217,114 +195,116 @@ function Sidebar({ active, onNav }) {
 }
 
 // navbar
-function Navbar() {
+function Navbar({ searchTerm, setSearchTerm, notificationCount }) {
+    //écrit dans la recherche,modifier ce texte,nombre de notification,nom admin
   return (
-    <header
-      style={{
-        background: "#FFFFFF",
-        borderBottom: "1px solid #EFE7D8",
-        padding: "0 20px",
-        height: 56,
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        flexShrink: 0,
-      }}
-    >
-      <div style={{ position: "relative", flex: 1, maxWidth: 280 }}>
-        <span
-          style={{
-            position: "absolute",
-            left: 10,
-            top: "50%",
-            transform: "translateY(-50%)",
-            color: "#94a3b8",
-            fontSize: 13,
-          }}
-        >
+    <header className="bg-white 
+    border-b border-[#EFE7D8] 
+    px-5 py-2 
+    min-h-[56px] 
+    flex items-center 
+    gap-3 
+    shrink-0 
+    flex-wrap"> 
+
+    
+
+      {/* Zone de recherche */}
+     <div className="relative flex-[1_1_180px] max-w-[320px] min-w-[150px]">
+              {/*positon icone, adapté,   barre ne dépasse320*/}
+        
+        {/*icone est placée librement dans son parent
+        /-translate-y-1/2 = le centrage vertical*/}
+        <span className="absolute 
+        left-[10px] top-1/2 
+        -translate-y-1/2 
+        text-[#94a3b8] 
+        text-[13px]">
           🔍
         </span>
 
-        <input
-          placeholder="Search users, sessions..."
-          style={{
-            width: "100%",
-            background: "#F8F6F0",
-            border: "1px solid #EFE7D8",
-            borderRadius: 8,
-            padding: "7px 12px 7px 30px",
-            fontSize: 13,
-            color: "#111111",
-            outline: "none",
-            fontFamily: "inherit",
-          }}
-        />
-      </div>
+  <input
+    placeholder="Rechercher..." 
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)} //e.target.value yaani texte eli admin ketbo
+    className="
+      w-full
+      bg-[#F8F6F0]
+      border border-[#EFE7D8]
+      rounded-lg
+      py-[7px] 
+      pr-3  
+      pl-[30px]
+      text-[13px]
+      text-[#111111]
+      outline-none
+      font-[inherit]
+    "
+  />
+  {/*pr= espace à droite/ pl= à gauche/ outline= supprimer le mot rechercher */}
+</div>
 
-      <div style={{ flex: 1 }} />
+      <div className="flex-1" />
 
+      {/* Notification */}
       <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 8,
-          border: "1px solid #EFE7D8",
-          background: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          position: "relative",
-          fontSize: 15,
-        }}
+        className="w-9 h-9 
+        rounded-lg 
+        border border-[#EFE7D8]
+         bg-white flex 
+         items-center 
+         justify-center 
+         cursor-pointer 
+         relative 
+         text-[15px]"
       >
         🔔
-        <div
-          style={{
-            width: 8,
-            height: 8,
-            background: "#DC2626",
-            borderRadius: "50%",
-            position: "absolute",
-            top: 6,
-            right: 6,
-            border: "2px solid #fff",
-          }}
-        />
+
+        {notificationCount > 0 && (
+          <div
+            className="min-w-4 h-4
+             bg-[#DC2626] 
+             rounded-full 
+             absolute 
+             top-[-4px] 
+             right-[-4px] 
+             border-2 
+             border-white
+            text-white 
+            text-[9px] 
+            flex 
+            items-center justify-center 
+            font-bold"
+          >
+            {notificationCount}
+          </div>
+        )}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          padding: "4px 10px 4px 4px",
-          borderRadius: 10,
-          border: "1px solid #EFE7D8",
-          cursor: "pointer",
-        }}
-      >
-        <div
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 7,
-            background: "linear-gradient(135deg,#FFC107,#E0A800)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 11,
-            fontWeight: 700,
-            color: "#111111",
-          }}
-        >
-          EA
-        </div>
+      {/* Profil admin */}
+      <div className="flex 
+      items-center 
+      gap-2 py-1 
+      pr-[10px] pl-1 
+      rounded-[10px] 
+      border border-[#EFE7D8] 
+      cursor-pointer">
 
-        <span style={{ fontSize: 13, fontWeight: 500, color: "#111111" }}>
-          Admin
-        </span>
-      </div>
+        <div className="w-7 h-7 
+        rounded-[7px] 
+        bg-gradient-to-br 
+        from-[#FFC107] to-[#E0A800] 
+        flex items-center justify-center text-[11px] f
+        ont-bold
+      text-[#111111]">
+        
+        AD
+  </div>
+
+  <span className="text-[13px] font-medium text-[#111111]">
+    Admin
+  </span>
+</div>
     </header>
   );
 }
@@ -407,7 +387,7 @@ function Charts({ activityData, modeData }) {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1.6fr 1fr",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
         gap: 12,
         marginBottom: 18,
       }}
@@ -434,9 +414,25 @@ function Charts({ activityData, modeData }) {
             <XAxis dataKey="day" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
             <Tooltip contentStyle={{ fontSize: 12, border: "1px solid #EFE7D8", borderRadius: 8, boxShadow: "none" }} />
-            <Line type="monotone" dataKey="users" stroke="#FFC107" strokeWidth={2} dot={false} name="Chatbot" />
-            <Line type="monotone" dataKey="sessions" stroke="#DC2626" strokeWidth={2} dot={false} name="Utilisation plateforme" strokeDasharray="4 2" />
-          </LineChart>
+            <Line
+  type="monotone"
+  dataKey="chatbot"
+  stroke="#FFC107"
+  strokeWidth={2}
+  dot={false}
+  name="Chatbot"
+/>
+
+<Line
+  type="monotone"
+  dataKey="platform"
+  stroke="#DC2626"
+  strokeWidth={2}
+  dot={false}
+  name="Utilisation plateforme"
+  strokeDasharray="4 2"
+/>
+</LineChart>
         </ResponsiveContainer>
       </div>
 
@@ -449,11 +445,11 @@ function Charts({ activityData, modeData }) {
         }}
       >
         <div style={{ fontWeight: 600, fontSize: 14, color: "#111111" }}>
-          Time per Mode
+          Temps par mode
         </div>
 
         <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14 }}>
-          Minutes spent per learning mode
+          Minutes passées par mode d’apprentissage
         </div>
 
         <ResponsiveContainer width="100%" height={160}>
@@ -470,18 +466,22 @@ function Charts({ activityData, modeData }) {
   );
 }
 
-function RecentActivity() {
-  const [tab, setTab] = useState("all");
-  const tabs = ["all", "chatbot", "jeux", "appel"];
-  const filtered = tab === "all" ? recentUsers : recentUsers.filter((u) => u.mode === tab);
+function RecentActivity({ recentUsersData }) {
 
+  const [tab, setTab] = useState("all");
+  const tabs = ["all", "chatbot", "jeux"];
+
+  const data = recentUsersData || [];
+
+  const filtered = tab === "all" ? data : data.filter((u) => u.mode === tab);
+  
   return (
     <div style={{ background: "#fff", borderRadius: 12, padding: 16, border: "1px solid #EFE7D8" }}>
       <div style={{ fontWeight: 600, fontSize: 14, color: "#111111", marginBottom: 10 }}>
-        Recent Activity
+        Activité récente
       </div>
 
-      <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
         {tabs.map((t) => (
           <button
             key={t}
@@ -499,7 +499,7 @@ function RecentActivity() {
               borderColor: tab === t ? "#FFC107" : "#EFE7D8",
             }}
           >
-            {t === "all" ? "All" : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === "all" ? "Tous" : t === "chatbot" ? "Chatbot" : "Jeux"}
           </button>
         ))}
       </div>
@@ -515,6 +515,7 @@ function RecentActivity() {
               padding: 10,
               background: "#F8F6F0",
               borderRadius: 8,
+              flexWrap: "wrap",
             }}
           >
             <div
@@ -554,7 +555,15 @@ function RecentActivity() {
                 ...modeBadgeStyle[u.mode],
               }}
             >
-              {u.mode}
+              {u.mode === "chatbot"
+                ? "Chatbot"
+                : u.mode === "jeux"
+                ? "Jeux"
+                : u.mode === "mots"
+                ? "Mots"
+                : u.mode === "discussion"
+                ? "Discussion"
+                : u.mode} 
             </span>
 
             <span style={{ fontSize: 11, color: "#94a3b8", whiteSpace: "nowrap" }}>
@@ -567,19 +576,20 @@ function RecentActivity() {
   );
 }
 
-function Leaderboard() {
+function Leaderboard({ leaderboardData }) {
+  const data = leaderboardData || [];
   return (
     <div style={{ background: "#fff", borderRadius: 12, padding: 16, border: "1px solid #EFE7D8" }}>
       <div style={{ fontWeight: 600, fontSize: 14, color: "#111111" }}>
-        Leaderboard
+        Classement des apprenants
       </div>
 
       <div style={{ fontSize: 12, color: "#64748b", marginBottom: 14 }}>
-        Top active learners this month
+        Apprenants les plus actifs ce mois-ci
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {leaderboard.map((u) => {
+        {data.map((u) => {
           const medal = rankMedal(u.rank);
 
           return (
@@ -592,6 +602,7 @@ function Leaderboard() {
                 padding: "9px 12px",
                 background: "#F8F6F0",
                 borderRadius: 8,
+                flexWrap: "wrap",
               }}
             >
               <span
@@ -657,7 +668,7 @@ function Leaderboard() {
   );
 }
 
-function Dashboard({ statCards, activityData, modeData }) {
+function Dashboard({ statCards, activityData, modeData, recentUsersData, leaderboardData }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
       <div style={{ fontWeight: 700, fontSize: 20, color: "#111111", marginBottom: 4 }}>
@@ -671,7 +682,7 @@ function Dashboard({ statCards, activityData, modeData }) {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4,1fr)",
+          gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
           gap: 12,
           marginBottom: 18,
         }}
@@ -691,16 +702,16 @@ function Dashboard({ statCards, activityData, modeData }) {
 
       <Charts activityData={activityData} modeData={modeData} />
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        <RecentActivity />
-        <Leaderboard />
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+        <RecentActivity recentUsersData={recentUsersData} />
+        <Leaderboard leaderboardData={leaderboardData} />
       </div>
     </div>
   );
 }
 
 // Page Étudiants avec données réelles
-function EtudiantsPage({ etudiants }) {
+function EtudiantsPage({ etudiants, supprimerEtudiant }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
       <div style={{ fontWeight: 700, fontSize: 20, color: "#111111", marginBottom: 4 }}>
@@ -720,7 +731,7 @@ function EtudiantsPage({ etudiants }) {
         }}
       >
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <table style={{ width: "100%", minWidth: 760, borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "#F8F6F0", color: "#64748b" }}>
                 <th style={thStyle}>Nom</th>
@@ -759,9 +770,13 @@ function EtudiantsPage({ etudiants }) {
                         Voir
                       </button>
 
-                      <button style={btnSupprimer}>
+                      <button
+                        style={btnSupprimer}
+                        onClick={() => supprimerEtudiant(e.id)}
+                      >
                         Supprimer
                       </button>
+
                     </td>
                   </tr>
                 ))
@@ -775,7 +790,7 @@ function EtudiantsPage({ etudiants }) {
 }
 
 // Page Professeurs avec données réelles
-function ProfesseursPage({ professeurs }) {
+function ProfesseursPage({ professeurs, supprimerProfesseur  }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: 20 }}>
       <div style={{ fontWeight: 700, fontSize: 20, color: "#111111", marginBottom: 4 }}>
@@ -795,7 +810,7 @@ function ProfesseursPage({ professeurs }) {
         }}
       >
         <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <table style={{ width: "100%", minWidth: 760, borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
               <tr style={{ background: "#F8F6F0", color: "#64748b" }}>
                 <th style={thStyle}>Nom</th>
@@ -836,8 +851,11 @@ function ProfesseursPage({ professeurs }) {
                         Voir
                       </button>
 
-                      <button style={btnSupprimer}>
-                        Supprimer
+                      <button
+                        style={btnSupprimer}
+                        onClick={() => supprimerProfesseur(p.id)}
+                      >
+                      Supprimer
                       </button>
                     </td>
                   </tr>
@@ -889,6 +907,9 @@ const btnSupprimer = {
 export default function Admin() {
   const [activeNav, setActiveNav] = useState("dashboard");
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+
   const [stats, setStats] = useState({
     apprenants: 0,
     conversations: 0,
@@ -902,7 +923,12 @@ export default function Admin() {
   const [etudiants, setEtudiants] = useState([]);
   const [professeurs, setProfesseurs] = useState([]);
 
+  const [recentUsersData, setRecentUsersData] = useState([]);
+  const [leaderboardData, setLeaderboardData] = useState([]);
+
   useEffect(() => {
+
+    
     fetch("http://127.0.0.1:8000/admin/stats")
       .then((res) => res.json())
       .then((data) => {
@@ -916,6 +942,7 @@ export default function Admin() {
     fetch("http://127.0.0.1:8000/activity")
       .then((res) => res.json())
       .then((data) => {
+        console.log("ACTIVITY =", data);
         setActivityData(data);
       });
 
@@ -923,6 +950,26 @@ export default function Admin() {
       .then((res) => res.json())
       .then((data) => {
         setModeData(data);
+      });
+
+    fetch("http://127.0.0.1:8000/admin/recent-activity")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("RECENT ACTIVITY =", data);
+        setRecentUsersData(data);
+      })
+      .catch((err) => {
+        console.log("Erreur recent activity :", err);
+      });
+
+    fetch("http://127.0.0.1:8000/admin/leaderboard")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("LEADERBOARD =", data);
+        setLeaderboardData(data);
+      })
+      .catch((err) => {
+        console.log("Erreur leaderboard :", err);
       });
 
     // Petite modification : vérifier que le backend renvoie bien un tableau
@@ -1014,24 +1061,45 @@ export default function Admin() {
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
+          minWidth: 0,
         }}
       >
-        <Navbar />
+        <Navbar
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          notificationCount={recentUsersData.length}
+          
+        />
 
-        {activeNav === "dashboard" && (
+        {activeNav === "dashboard" && searchTerm === "" && (
           <Dashboard
             statCards={statCards}
             activityData={activityData}
             modeData={modeData}
+            recentUsersData={recentUsersData}
+            leaderboardData={leaderboardData}
           />
         )}
 
         {activeNav === "etudiants" && (
-          <EtudiantsPage etudiants={etudiants} />
+          <EtudiantsPage
+            etudiants={etudiants.filter((e) =>
+            `${e.nom} ${e.prenom} ${e.email}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+          )}
+          />
         )}
 
         {activeNav === "professeurs" && (
-          <ProfesseursPage professeurs={professeurs} />
+          <ProfesseursPage
+            professeurs={professeurs.filter((p) =>
+            `${p.nom} ${p.prenom} ${p.email}`
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase())
+          )}
+          />
+
         )}
       </div>
     </div>

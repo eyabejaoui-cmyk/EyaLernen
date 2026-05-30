@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
+
+{/* créer une variable qui peut changer et exécuter du code automatique quand la page s'ouvre*/}
 import { useEffect, useState } from "react";
+
+{/* tableau, apprendre, chapeau étudiant, carte, progression, utilisateur, menu, fermeture*/}
 import {
-  LayoutGrid,
+  LayoutGrid, 
   BookOpen,
   GraduationCap,
   Map,
@@ -11,6 +15,8 @@ import {
   X,
 } from "lucide-react";
 
+{/*le graphique responsive, créer un grapgique en ligne, dessine une ligne dans le graphique
+  axe horizontal, axe vertical, petit info,  */}
 import {
   ResponsiveContainer,
   LineChart,
@@ -27,26 +33,34 @@ import { useNavigate } from "react-router-dom";
 // hna n3arfo component esmou Ness
 export default function Ness() {
   
+  {/* données du graphique, modifier l données, tableau vide  */}
   const [chartData, setChartData] = useState([]);
   
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  {/*stocker les statistiques */}
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
 
-//const email = localStorage.getItem("email");
+             {/*mémorisé , donne moi la valeur enregisté avec ce mail */}
 const email = localStorage.getItem("email");
 console.log("EMAIL =", email);
 
-fetch(`http://127.0.0.1:8000/stats/${email}`)
+{/* /stats/eya@gmail.com */}
 
-.then((res) => res.json())
+fetch(`http://127.0.0.1:8000/stats/${email}`) 
+
+
+
+.then((res) => res.json()) 
+
 
 .then((data) => {
 
     console.log("DATA =", data);
 
-    setStats(data);
+    setStats(data); {/*met les données dans la variable stats */}
 })
 
 .catch((err) => {
@@ -59,7 +73,7 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
 
 .then((data) => {
     console.log(data);
-    setChartData(data);
+    setChartData(data);  {/*met les données dans chartData */}
 });
 
 }, []);
@@ -89,13 +103,23 @@ fetch(`http://127.0.0.1:8000/stats-days/${email}`)
       shadow-lg
       "
     >
-      <Menu size={24} />
+      <Menu size={24} /> {/*taille de l’icône */}
     </button>
 
-    {/* sidebar */}
+
+    {sidebarOpen && (
+    <div
+      onClick={() => setSidebarOpen(false)}
+      className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+    ></div>
+    )} 
+
+    {/* sidebar à gauche/ col=vericale / durée de 300 millisecondes*/}
     <aside
       className={`
-      fixed top-0 left-0 z-50
+      fixed top-0 
+      left-0 
+      z-50
       h-screen
 
       w-72
@@ -109,16 +133,20 @@ border-r border-[#333333]
 
       transition-transform duration-300
 
-      ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+        
 
+      ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+          
       lg:translate-x-0
       `}
-    >
+    > {/*si sidebarOpen = true > sidebar visible
+         si sidebarOpen = false > sidebar cachée à gauche 
+         Sur ordinateur → sidebar toujours visible*/}
 
-      {/* fermer sidebar mobile */}
+      {/* fermer sidebar mobile/ self=la fin de sa ligne/ margin-bottom=ajoute un espace sous le bouton */}
       <button
         onClick={() => setSidebarOpen(false)}
-        className="lg:hidden self-end mb-4"
+        className="lg:hidden self-end mb-4 text-white hover:text-[#FFC107] transition"
       >
         <X size={24} />
       </button>
@@ -152,7 +180,7 @@ border-r border-[#333333]
 
         {/* navigation */}
         <nav>
-
+            {/*espace vertical - espace en bas */}
           <ul className="space-y-4 mb-6">
 
             <li>
@@ -235,7 +263,7 @@ hover:text-black
 
            <li>
 
-              <Link
+              {/*<Link
                 to="/progression"
                 className="
                 flex items-center justify-between
@@ -261,7 +289,7 @@ hover:text-black
 
                 <span className="w-3 h-3 rounded-full bg-red-600"></span>
 
-              </Link>
+              </Link>*/}
 
             </li>
 
@@ -300,34 +328,38 @@ hover:text-black
 
     </aside>
 
-      <main className="w-full p-3 sm:p-4 lg:p-10 lg:ml-72">
+      <main className="w-full p-3 pt-20 sm:p-4 sm:pt-20 lg:p-10 lg:ml-72">
 
   <div className="h-full rounded-3xl bg-white border border-[#EFE7D8] p-4 sm:p-6 lg:p-8">
 
+          {/*active le système, telephone:une seule colonne, ordinateur=3col */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 h-full">
 
       <div className="lg:col-span-2">
 
+                  {/*carte verticalement */}
         <div className="flex flex-col gap-6">
 
           {/* Discussion */}
           <Link to="/chatbot" className="block">
-
+                                                                            {/* cache ce qui dépasse des coins, petite ombre*/}
             <div className="bg-white border border-[#EFE7D8] rounded-3xl overflow-hidden shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.30)] transition">
 
+                                    {/*image et texte sont l’un sous l’autre, texte à gauche et image à droite */}
               <div className="flex flex-col lg:flex-row justify-between">
-
+                                          {/*texte sont verticalement*/}
                 <div className="p-5 sm:p-8 flex flex-col">
 
+                                {/*espace sous titre */}
                   <h2 className="mb-4 text-2xl font-bold">
                     Discussion
                   </h2>
-
+                                                {/*taille normale, espace entre les lignes */}
                   <p className="text-gray-500 text-base leading-7">
                     Améliore tes compétences linguistiques en discutant avec
                     notre professeur alimenté par IA.
                   </p>
-
+                                          {/* si l’espace est petit les badges descendent, espace entre les badges*/}
                   <div className="flex flex-wrap gap-4 mt-4">
 
                     <span className="text-[13px] px-4 py-1.5 rounded-full text-white bg-[#1F1F1F]">
@@ -341,8 +373,8 @@ hover:text-black
                   </div>
 
                 </div>
-
-                <div className="w-full lg:w-[280px] bg-[#FFC107] rounded-l-[80px] flex items-center justify-center">
+                                        {/*largeur, arrondi à gauche,  */}
+                <div className="w-full lg:w-[280px] bg-[#FFC107] rounded-t-[50px] lg:rounded-t-none lg:rounded-l-[80px] flex items-center justify-center py-6 lg:py-0">
 
                   <img
                     src="/images/discussion.png"
@@ -436,7 +468,7 @@ hover:text-black
 
                 </div>
 
-                <div className="w-full lg:w-[280px] bg-[#DC2626] rounded-l-[80px] flex items-center justify-center">
+                <div className="w-full lg:w-[280px] bg-[#DC2626] rounded-t-[50px] lg:rounded-t-none lg:rounded-l-[80px] flex items-center justify-center py-6 lg:py-0">
 
                   <img
                     src="/images/mode-appel.png"
@@ -483,13 +515,13 @@ hover:text-black
 
                 </div>
 
-                <div className="w-full lg:w-[280px] bg-[#1F1F1F] rounded-l-[80px] flex items-center justify-center">
+                <div className="w-full lg:w-[280px] bg-[#1F1F1F] rounded-t-[50px] lg:rounded-t-none lg:rounded-l-[80px] flex items-center justify-center py-6 lg:py-0">
 
                   <img
                     src="/images/jeux.png"
                     alt="jeux de role"
                     className="w-32 sm:w-40 lg:w-44 object-contain"
-                  />
+                  />                                {/*garde l’image complète sans la couper */}
 
                 </div>
 
@@ -505,20 +537,20 @@ hover:text-black
 
       {/*<div className="hidden lg:block lg:col-span-1"></div>*/}
 
-      <div className="hidden lg:block lg:col-span-1">
+      <div className="lg:col-span-1">
 
   <div className="sticky top-8 flex flex-col gap-6">
 
     {/* dashboard progression */}
-    <div className="bg-white rounded-3xl border border-[#EFE7D8] p-6 shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.25)] transitio">
-
+    <div className="bg-white rounded-3xl border border-[#EFE7D8] p-6 shadow-sm hover:shadow-[0_4px_14px_rgba(255,193,7,0.25)] transition">
+                                        {/*met un élément à gauche et l’autre à droite , espace*/}
       <div className="flex items-center justify-between mb-6">
 
         <div>
           <h2 className="text-xl font-bold text-[#0f172a]">
             Progression
           </h2>
-
+                                              {/*espace au-dessus*/}
           <p className="text-sm text-gray-500 mt-1">
             Votre évolution cette semaine
           </p>
@@ -534,11 +566,11 @@ hover:text-black
       <div className="mb-6">
 
         <div className="flex justify-between items-center mb-2">
-
+                          {/*petit texte, texte moyen gras */}
           <span className="text-sm font-medium text-gray-700">
             Discussion
           </span>
-
+              {/*afficher le pourcentage*/}
           <span className="text-sm font-semibold text-[#FFC107]">
             {stats?.discussion}%
           </span>
@@ -644,37 +676,40 @@ hover:text-black
     </div>
 
   </div>
-
+            {/*hauteur lel graphique*/}
   <div className="h-64">
 
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%"> {/*prends la taille disponible*/}
 
+      {/*composant de la bibliothèque Recharts il sert à créer un graphique sous forme de lignes
+       bottom: 0 = n’ajoute pas d’espace en bas */}
       <LineChart
         margin={{ top: 20, right: 10, left: -20, bottom: 0 }}
         data={chartData}
 
       >
 
-        <CartesianGrid strokeDasharray="3 3" />
+        <CartesianGrid strokeDasharray="3 3" /> {/*grille derrière le graphique*/}
 
-        <XAxis dataKey="day" />
+        <XAxis dataKey="day" /> {/*prends la valeur day depuis chartData */}
         <YAxis domain={[0, 'auto']} />
 
-        <Tooltip />
+        <Tooltip /> {/*affiche une petite boîte d’information*/}
 
+          {/*ligne du graphique, utilise la donnée temps*/}
         <Line
-          type="monotone"
+          type="monotone" 
           dataKey="temps"
           stroke="#DC2626"
           strokeWidth={4}
         />
 
         <Line
-  type="monotone"
-  dataKey="messages"
-  stroke="#FFC107"
-  strokeWidth={4}
-/>
+          type="monotone"
+          dataKey="messages"
+          stroke="#FFC107"
+          strokeWidth={4}
+        />
 
       </LineChart>
 

@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { LogOut } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 
 export default function ProfesseurSpace() {
   const [message, setMessage] = useState("");
   const [showCourseForm, setShowCourseForm] = useState(false);
 
   const [activePage, setActivePage] = useState("dashboard");
+
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
   const [professeurId, setProfesseurId] = useState(
     localStorage.getItem("professeur_id") || ""
@@ -257,9 +259,42 @@ export default function ProfesseurSpace() {
 
   return (
     <div className="min-h-screen bg-[#F8F6F0] flex">
-      <aside className="w-72 bg-[#1F1F1F] border-r border-[#333333] min-h-screen fixed left-0 top-0 hidden md:flex flex-col justify-between px-5 py-6">
+
+      {showMobileMenu && (
+        <div
+          onClick={() => setShowMobileMenu(false)}
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+        ></div>
+      )} 
+
+      <aside
+        className={`
+        w-72
+      bg-[#1F1F1F]
+        border-r
+      border-[#333333]
+        min-h-screen
+        fixed
+        left-0
+        top-0
+        z-50
+        flex
+        flex-col
+        justify-between
+        px-5
+        py-6
+        transition-transform
+        duration-300
+
+        ${showMobileMenu ? "translate-x-0" : "-translate-x-full"}
+        
+        md:translate-x-0
+      `}
+    >
         <div>
-          <div className="flex items-center gap-3 mb-10 px-3">
+          <div className="flex items-center justify-between mb-10 px-3">
+            <div className="flex items-center gap-3">
+
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FFC107] to-[#E0A800] flex items-center justify-center text-xl shadow-[0_4px_16px_rgba(255,193,7,0.35)]">
               🦉
             </div>
@@ -272,6 +307,17 @@ export default function ProfesseurSpace() {
                 Espace professeur
               </p>
             </div>
+
+                </div>
+
+                <button
+                  onClick={() => setShowMobileMenu(false)}
+                  className="md:hidden text-white hover:text-[#FFC107]"
+                >
+                
+                <X size={24} />
+
+              </button>
           </div>
 
           <nav className="space-y-3">
@@ -280,6 +326,7 @@ export default function ProfesseurSpace() {
                 key={item.key}
                 onClick={() => {
                   setActivePage(item.key);
+                  setShowMobileMenu(false);
 
                   if (item.key === "etudiants") {
                     loadReservations();
@@ -306,7 +353,8 @@ export default function ProfesseurSpace() {
             ))}
           </nav>
         </div>
-
+       
+       <div>
         <div className="bg-[#111111] border border-[#3A2600] rounded-3xl p-4">
           <p className="text-sm font-semibold text-[#FFC107]">
             Conseil
@@ -343,9 +391,18 @@ export default function ProfesseurSpace() {
 
   <span>Déconnexion</span>
 </button>
+</div>
       </aside>
 
-      <main className="flex-1 md:ml-72 p-6">
+      <main className="flex-1 md:ml-72 p-3 sm:p-4 md:p-6 min-w-0">
+
+        <button
+          onClick={() => setShowMobileMenu(true)}
+          className="md:hidden mb-4 w-11 h-11 flex items-center justify-center bg-[#1F1F1F] text-[#FFC107] rounded-xl"
+        >
+        <Menu size={24} />
+        </button>
+
         <div className="bg-white rounded-[28px] p-6 shadow-sm border border-[#EFE7D8] mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
@@ -509,11 +566,11 @@ export default function ProfesseurSpace() {
                   </div>
                 )}
 
-                <h3 className="text-xl font-bold text-[#111111]">
+                <h3 className="text-xl font-bold text-[#111111] break-all">
                   {profile.prenom || "Prénom"} {profile.nom || "Nom"}
                 </h3>
 
-                <p className="text-gray-500 text-sm mt-1">
+                <p className="text-gray-500 text-sm mt-1 break-all">
                   {profile.email || "email professeur"}
                 </p>
 

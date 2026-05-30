@@ -7,6 +7,7 @@ import {
   GraduationCap,
   TrendingUp,
   User,
+  Menu,
 } from "lucide-react";
 
 export default function ProfList() {
@@ -90,6 +91,21 @@ export default function ProfList() {
 
   return (
     <div className="min-h-screen bg-[#F8F6F0] flex">
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="fixed top-4 left-4 z-40 lg:hidden w-12 h-12 rounded-full bg-[#1F1F1F] text-white flex items-center justify-center shadow-lg"
+      > 
+      
+      <Menu size={24} />
+      </button>
+
+    {sidebarOpen && (
+      <div
+        onClick={() => setSidebarOpen(false)}
+        className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+      ></div>
+      )}
+
       {/* Sidebar gauche */}
       <aside
         className={`
@@ -100,6 +116,7 @@ export default function ProfList() {
         border-r border-[#333333]
         flex flex-col justify-between
         px-6 py-8
+        overflow-y-auto
         transition-transform duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
@@ -196,7 +213,7 @@ export default function ProfList() {
                 </Link>
               </li>
 
-              <li>
+              {/*<li>
                 <Link
                   to="/progression"
                   className="
@@ -217,7 +234,7 @@ export default function ProfList() {
 
                   <span className="w-3 h-3 rounded-full bg-red-600"></span>
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </nav>
         </div>
@@ -244,7 +261,7 @@ export default function ProfList() {
       </aside>
 
       {/* Contenu à droite */}
-      <div className="relative flex-1 lg:ml-72 rounded-3xl bg-[#F8F6F0] border-x-2 border-[#EFE7D8] p-8 py-14 px-3">
+      <div className="relative flex-1 lg:ml-72 rounded-3xl bg-[#F8F6F0] border-x-2 border-[#EFE7D8] px-3 py-20 lg:py-14">
         
 
         <h1 className="text-3xl font-bold text-center mb-8 text-[#111111]">
@@ -272,12 +289,12 @@ export default function ProfList() {
                   alt="Professeur"
                 />
 
-                <div>
-                  <h2 className="font-semibold text-lg text-[#111111]">
+                <div className="min-w-0">
+                  <h2 className="font-semibold text-lg text-[#111111] break-words">
                     {prof.prenom} {prof.nom}
                   </h2>
 
-                  <p className="text-gray-600 text-sm">
+                  <p className="text-gray-600 text-sm break-words">
                     {prof.description || "Professeur d’allemand"}
                   </p>
 
@@ -298,7 +315,8 @@ export default function ProfList() {
         {/* Popup professeur */}
         {selectedProf && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white w-[700px] rounded-3xl p-6 relative">
+            <div className="bg-white w-[92%] max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 relative">
+
               <button
                 onClick={() => setSelectedProf(null)}
                 className="absolute top-4 right-4 text-gray-500 hover:text-black"
@@ -306,7 +324,8 @@ export default function ProfList() {
                 ✕
               </button>
 
-              <div className="flex gap-4 items-center">
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+
                 <img
                   src={
                     selectedProf.photo
@@ -322,7 +341,7 @@ export default function ProfList() {
                     {selectedProf.prenom} {selectedProf.nom}
                   </h2>
 
-                  <p className="text-gray-500">{selectedProf.email}</p>
+                  <p className="text-gray-500 break-all">{selectedProf.email}</p>
 
                   <p className="text-sm text-gray-400">
                     ⭐ 4.9 • Niveaux : {selectedProf.niveaux}
@@ -337,7 +356,7 @@ export default function ProfList() {
 
               <h3 className="mt-6 font-semibold">TYPE DE COURS</h3>
 
-              <div className="flex gap-4 mt-3">
+              <div className="flex flex-wrap gap-3 mt-3">
                 <div
                   onClick={() => {
                     setTypeCours("groupe");
@@ -427,7 +446,8 @@ export default function ProfList() {
         {/* Popup paiement */}
         {showPayment && selectedCours && selectedProf && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white w-[600px] rounded-3xl p-6 relative">
+            <div className="bg-white w-[92%] max-w-[600px] max-h-[90vh] overflow-y-auto rounded-3xl p-5 sm:p-6 relative">
+
               <button
                 onClick={() => setShowPayment(false)}
                 className="absolute top-4 right-4 text-xl"
@@ -442,7 +462,7 @@ export default function ProfList() {
                 {selectedCours.niveau}
               </p>
 
-              <div className="flex gap-4 mb-6">
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
                 <div
                   onClick={() => setModePaiement("heure")}
                   className={`flex-1 p-4 rounded-2xl border-2 cursor-pointer transition ${
@@ -483,11 +503,11 @@ export default function ProfList() {
               <div className="flex gap-4 mb-4">
                 <input
                   placeholder="MM/AA"
-                  className="w-1/2 border p-4 rounded-2xl"
+                  className="flex-1 min-w-0 border p-4 rounded-2xl"
                 />
                 <input
                   placeholder="CVC"
-                  className="w-1/2 border p-4 rounded-2xl"
+                  className="flex-1 min-w-0 border p-4 rounded-2xl"
                 />
               </div>
 

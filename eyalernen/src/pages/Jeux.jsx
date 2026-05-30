@@ -41,6 +41,12 @@ export default function Jeux() {
 
       {/* bouton fermer page */}
      
+      {sidebarOpen && (
+      <div
+        onClick={() => setSidebarOpen(false)}
+        className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+        ></div>
+      )} 
 
       {/* Sidebar */}
       <aside
@@ -164,28 +170,7 @@ export default function Jeux() {
                 </Link>
               </li>
 
-              <li>
-                <Link
-                  to="/progression"
-                  className="
-                  flex items-center justify-between
-                  text-gray-300
-                  font-medium
-                  rounded-2xl
-                  px-5 py-4
-                  hover:bg-[#FFC107]
-                  hover:text-black
-                  transition-all duration-200
-                  "
-                >
-                  <div className="flex items-center gap-3">
-                    <TrendingUp size={22} />
-                    <span>Progression</span>
-                  </div>
-
-                  <span className="w-3 h-3 rounded-full bg-red-600"></span>
-                </Link>
-              </li>
+              
 
             </ul>
 
@@ -220,7 +205,8 @@ export default function Jeux() {
       {/* contenu principal */}
       <main className="lg:ml-72 min-h-screen">
 
-        <div className="h-screen overflow-y-auto bg-[#F8F6F0] border border-[#EFE7D8] p-4 sm:p-8">
+        <div className="h-screen overflow-y-auto bg-[#F8F6F0] border border-[#EFE7D8] p-4 pt-20 sm:p-8 lg:pt-8">
+          
 
           <div className="max-w-[1000px] mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 

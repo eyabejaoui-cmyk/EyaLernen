@@ -511,7 +511,7 @@ export default function Mots() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#171717] pb-32 relative">
+    <div className="flex flex-col items-center justify-center min-h-dvh bg-[#171717] px-4 pt-20 pb-40 relative overflow-y-auto">
 
       <div className="absolute top-0 left-0 w-full">
         <div className="h-[5px] bg-black"></div>
@@ -521,7 +521,7 @@ export default function Mots() {
 
       <button
         onClick={() => navigate("/ChoixThemeMots")}
-        className="absolute top-8 right-8 w-11 h-11 rounded-full border border-[#FFC107] bg-[#0F0F0F] text-[#FFC107] flex items-center justify-center hover:bg-[#FFC107] hover:text-black transition"
+      className="absolute top-8 right-4 sm:right-8 w-11 h-11 rounded-full border border-[#FFC107] bg-[#0F0F0F] text-[#FFC107] flex items-center justify-center hover:bg-[#FFC107] hover:text-black transition"
       >
         ×
       </button>

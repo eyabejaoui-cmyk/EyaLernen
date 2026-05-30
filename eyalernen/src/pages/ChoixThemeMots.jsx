@@ -14,56 +14,54 @@ export default function ChoixThemeMots() {
 
   const navigate = useNavigate();
 
-  
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const themes = [
     {
       nom: "Maison",
-      icon: "🏠",
+      image: "/images/maison1.jpg",
       theme: "maison",
       description: "Apprendre les mots de la maison"
     },
     {
       nom: "Restaurant",
-      icon: "🍽️",
+      image: "/images/restau1.jpg",
       theme: "restaurant",
       description: "Apprendre les mots au restaurant"
     },
     {
       nom: "Café",
-      icon: "☕",
+      image: "/images/café1.jpg",
       theme: "cafe",
       description: "Apprendre les mots au café"
     },
     {
       nom: "Supermarché",
-      icon: "🛒",
+      image: "/images/supermarché1.jpg",
       theme: "supermarche",
       description: "Apprendre les mots du supermarché"
     },
     {
       nom: "Voyage",
-      icon: "✈️",
+      image: "/images/voyage1.jpg",
       theme: "voyage",
       description: "Apprendre les mots pour voyager"
     },
     {
       nom: "École",
-      icon: "🎒",
+      image: "/images/école1.jpg",
       theme: "ecole",
       description: "Apprendre les mots de l’école"
     },
     {
       nom: "Santé",
-      icon: "🩺",
+      image: "/images/santé1.jpg",
       theme: "sante",
       description: "Apprendre les mots chez le médecin"
     },
     {
       nom: "Vêtements",
-      icon: "👕",
+      image: "/images/vet1.jpg",
       theme: "vetements",
       description: "Apprendre les mots des vêtements"
     }
@@ -204,28 +202,7 @@ export default function ChoixThemeMots() {
                 </Link>
               </li>
 
-              <li>
-                <Link
-                  to="/progression"
-                  className="
-                  flex items-center justify-between
-                  text-gray-300
-                  font-medium
-                  rounded-2xl
-                  px-5 py-4
-                  hover:bg-[#FFC107]
-                  hover:text-black
-                  transition-all duration-200
-                  "
-                >
-                  <div className="flex items-center gap-3">
-                    <TrendingUp size={22} />
-                    <span>Progression</span>
-                  </div>
-
-                  <span className="w-3 h-3 rounded-full bg-red-600"></span>
-                </Link>
-              </li>
+              
 
             </ul>
           </nav>
@@ -261,7 +238,6 @@ export default function ChoixThemeMots() {
           <div className="h-[5px] bg-[#FFC107]"></div>
         </div>
 
-
         <div className="max-w-6xl mx-auto pt-16">
 
           <div className="text-center mb-10">
@@ -294,8 +270,16 @@ export default function ChoixThemeMots() {
                 flex flex-col
                 "
               >
-                <div className="text-5xl mb-4">
-                  {item.icon}
+                <div className="mb-4 flex justify-center">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.nom}
+                      className="w-20 h-20 object-contain"
+                    />
+                  ) : (
+                    <span className="text-5xl">{item.icon}</span>
+                  )}
                 </div>
 
                 <h2 className="text-xl font-bold text-[#111111] mb-2">

@@ -16,16 +16,7 @@ function Home() {
       <main>
         <HeroSection />
         <AiTypes />
-        <Subscription />
-        <AiBenefits />
-        <Contact />
-        <Link to="/ness">l Sandi</Link>
-        <Link to="/chatbot">Ouvrir Chatbot</Link>
-        
-        
-        <Link to="/Admin">ya lahwi</Link>
-        
-        <Link to="/ProfesseurSpace">wohhh</Link>
+        <Subscription />      
       </main>
       <Footer />
     </>

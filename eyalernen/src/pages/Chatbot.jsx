@@ -1,223 +1,285 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react"; //useRef pour contrôler la zone des messages
 import { useNavigate } from "react-router-dom";
 
 const API = "http://127.0.0.1:8000/chat";
-const TIMEOUT_MS = 30000; // 30s
+const TIMEOUT_MS = 30000; // Si le backend ne répond pas après 30sc le frontend affiche une erreur de timeout
 
-export default function Chatbot({ scenario }) {
-  const [input, setInput] = useState("");
+
+
+export default function Chatbot({ scenario }) { //Il reçoit une information appele scénario
+
+
+  const [input, setInput] = useState("");  //écrit par l’utilisateur
+
   const [mode, setMode] = useState("chat");
-  const [voiceLang, setVoiceLang] = useState("de-DE");
-  const [voices, setVoices] = useState([]);
-  
-  const [loading, setLoading] = useState(false);
-  const [listening, setListening] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: "bot", text: "Hallo!" },
-  ]);
-  
 
-  const boxRef = useRef(null);
+  const [voiceLang, setVoiceLang] = useState("de-DE"); // langue du micro
+
+  const [voices, setVoices] = useState([]);
+  const [showVoiceMenu, setShowVoiceMenu] = useState(false);//???
+
+  const [loading, setLoading] = useState(false); // ....
+
+  const [listening, setListening] = useState(false); // le micro
+
+  const [messages, setMessages] = useState([
+    { role: "bot", text: "Hallo!" }, //??
+  ]);
+
+  const [explanationLanguage, setExplanationLanguage] = useState("auto");//langue d’explication
+
+
+  const [showExplanationMenu, setShowExplanationMenu] = useState(false);//menu d'explication
+
+  const boxRef = useRef(null);// scroll
 
   const navigate = useNavigate();
+
+
+  //charge les voix disponibles dans le navigateur
   useEffect(() => {
-  function loadVoices() {
-    window.speechSynthesis.getVoices();
+    function loadVoices() {
+      window.speechSynthesis.getVoices();
+    }
+
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
+
+
+  //détecter la langue
+
+  function detectLangPart(text) {
+    const lower = text.toLowerCase(); //miniscule
+
+    // Arabe / Derja en écriture arabe
+    if (/[\u0600-\u06FF]/.test(text)) {
+      return "ar";
+    }
+
+    // français 
+    const frenchWords = [
+      "bonjour",
+      "merci",
+      "français",
+      "explique",
+      "je ",
+      "tu ",
+      "vous ",
+      "nous ",
+      "ça",
+      "c'est",
+      "est-ce",
+      "avec",
+      "pour",
+      "pourquoi",
+      "comment",
+    ];
+
+
+
+    // word = chaque mot de la liste testé un par un
+    // lower=le mots après le miniscule
+    if (frenchWords.some((word) => lower.includes(word))) {
+      return "fr";
+    }
+
+    // Par défaut allemand
+    return "de";
   }
 
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
+  function getVoiceByLang(lang) {
 
-  return () => {
-    window.speechSynthesis.onvoiceschanged = null;
-  };
-}, []);
+              //navigateur.liretexte
+    const allVoices = window.speechSynthesis.getVoices();
 
+    if (lang === "ar") {
+      return (
+        allVoices.find((v) => v.lang === "ar-SA") ||
+        allVoices.find((v) => v.lang === "ar") ||
+        allVoices.find((v) => v.lang.startsWith("Arabic")) //commence par
+      );
+    }
 
-  //function speakText(text) {
-    //window.speechSynthesis.cancel();
+    if (lang === "fr") {
+      return (
+        allVoices.find((v) => v.lang === "fr-FR") ||
+        allVoices.find((v) => v.lang.startsWith("fr"))
+      );
+    }
 
-    //const utterance = new SpeechSynthesisUtterance(text);
+    return (
+      allVoices.find((v) => v.lang === "de-DE") ||
+      allVoices.find((v) => v.lang.startsWith("de"))
+    );
+  }
 
-    //const voices = speechSynthesis.getVoices();
+  //function splitTextByLanguage(text) {
+    // Sépare le texte par ligne ou par ponctuation
+    //const parts = text
+     // .split(/(?<=[.!؟?])\s+|\n+/)
+      //.map((part) => part.trim())
+      //.filter((part) => part.length > 0);
 
-    //const germanVoice = voices.find(v => v.lang.startsWith("de"));
-
-    //if (germanVoice) {
-      //utterance.voice = germanVoice;
-      //utterance.lang = germanVoice.lang;
-    //} else {
-      //utterance.lang = "de-DE";
-    //}
-
-    //utterance.rate = 1.0;
-
-    //window.speechSynthesis.speak(utterance);
+    //return parts.map((part) => ({
+      //text: part,
+      //lang: detectLangPart(part),
+    //}));
   //}
 
 
-  function detectLangPart(text) {
-  const lower = text.toLowerCase();
+  function splitTextByLanguage(text) {
 
-  // Arabe / Derja en écriture arabe
-  if (/[\u0600-\u06FF]/.test(text)) {
-    return "ar";
+  // On remplace les signes de ponctuation par un retour à la ligne
+  text = text.replaceAll(".", ".\n");
+  text = text.replaceAll("!", "!\n");
+  text = text.replaceAll("?", "?\n");
+  text = text.replaceAll("؟", "؟\n");
+
+  // On coupe le texte ligne par ligne
+  const lines = text.split("\n");
+
+  // On prépare une liste vide
+  const parts = [];
+
+  // On parcourt chaque ligne
+  //line = "Hallo!"
+  //line = "Bonjour"
+ //line = "مرحب"
+  for (let line of lines) {
+
+    const cleanLine = line.trim(); // nettoyer espaces
+
+    // On garde seulement les lignes non vides
+    if (cleanLine.length > 0) {
+      parts.push(cleanLine);
+    }
   }
 
-  // Français simple
-  const frenchWords = [
-    "bonjour",
-    "merci",
-    "français",
-    "explique",
-    "je ",
-    "tu ",
-    "vous ",
-    "nous ",
-    "ça",
-    "c'est",
-    "est-ce",
-    "avec",
-    "pour",
-    "pourquoi",
-    "comment"
-  ];
-
-  if (frenchWords.some((word) => lower.includes(word))) {
-    return "fr";
-  }
-
-  // Par défaut allemand
-  return "de";
-}
-
-function getVoiceByLang(lang) {
-  const allVoices = window.speechSynthesis.getVoices();
-
-  if (lang === "ar") {
-    return (
-      allVoices.find((v) => v.lang === "ar-SA") ||
-      allVoices.find((v) => v.lang === "ar") ||
-      allVoices.find((v) => v.lang.startsWith("Arabic"))
-    );
-  }
-
-  if (lang === "fr") {
-    return (
-      allVoices.find((v) => v.lang === "fr-FR") ||
-      allVoices.find((v) => v.lang.startsWith("fr"))
-    );
-  }
-
-  return (
-    allVoices.find((v) => v.lang === "de-DE") ||
-    allVoices.find((v) => v.lang.startsWith("de"))
-  );
-}
-
-function splitTextByLanguage(text) {
-  // Sépare le texte par ligne ou par ponctuation
-  const parts = text
-    .split(/(?<=[.!؟?])\s+|\n+/)
-    .map((part) => part.trim())
-    .filter((part) => part.length > 0);
-
+  // On retourne chaque partie avec sa langue détectée
   return parts.map((part) => ({
     text: part,
     lang: detectLangPart(part),
   }));
 }
 
-function speakText(text) {
-  window.speechSynthesis.cancel();
+  //lire le texte
+  function speakText(text) { //speakText("Hallo, wie geht es dir?")
 
-  const parts = splitTextByLanguage(text);
+    window.speechSynthesis.cancel(); // Stopper toute lecture précédente
 
-  let index = 0;
+    const parts = splitTextByLanguage(text); //fonction { text: "Hallo!", lang: "de" }
+      // splitTextByLanguage() --> detectLangPart()
+    
+    let index = 0;
 
-  function speakNext() {
-    if (index >= parts.length) return;
+    function speakNext() {
 
-    const part = parts[index];
-    const utterance = new SpeechSynthesisUtterance(part.text);
+      if (index >= parts.length) return; // parts.length = 3 /0 1 2 f 3 return
 
-    const voice = getVoiceByLang(part.lang);
+      // Prendre la phrase actuelle
+      const part = parts[index];
 
-    if (part.lang === "ar") {
-      utterance.lang = voice ? voice.lang : "ar-SA";
-    } else if (part.lang === "fr") {
-      utterance.lang = voice ? voice.lang : "fr-FR";
-    } else {
-      utterance.lang = voice ? voice.lang : "de-DE";
+      // Préparer la phrase pour la lecture audio
+      const utterance = new SpeechSynthesisUtterance(part.text);
+
+      const voice = getVoiceByLang(part.lang);
+
+      if (part.lang === "ar") {
+        utterance.lang = voice ? voice.lang : "ar-SA";
+      } else if (part.lang === "fr") {
+        utterance.lang = voice ? voice.lang : "fr-FR";
+      } else {
+        utterance.lang = voice ? voice.lang : "de-DE";
+      }
+
+
+      // Utiliser la voix trouvée si elle existe
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      utterance.rate = 0.9; //vitesse
+      utterance.pitch = 1;
+
+
+      // Quand la phrase actuelle est terminée passe
+      utterance.onend = () => {
+        index++;
+        speakNext();
+      };
+
+      // Lancer la lecture de la phrase actuelle
+      window.speechSynthesis.speak(utterance);
     }
 
-    if (voice) {
-      utterance.voice = voice;
-    }
-
-    utterance.rate = 0.9;
-    utterance.pitch = 1;
-
-    utterance.onend = () => {
-      index++;
-      speakNext();
-    };
-
-    window.speechSynthesis.speak(utterance);
+    //commencer
+    speakNext();
   }
 
-  speakNext();
+  //utilisateur clique sur micro
+  //le navigateur ouvre le micro
+  //utilisateur parle
+  //le navigateur transforme la voix en texte
+  //le texte apparaît dans l'input
+
+  //démarrer a reconnaissance vocale
+  function startVoiceRecognition() {
+
+  // on récupère l'outil du navigateur pour utiliser le micro
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  // Si le navigateur ne supporte pas la reconnaissance vocale
+  if (!SpeechRecognition) {
+    alert("Le micro n'est pas supporté sur ce navigateur.");
+    return;
+  }
+
+  // On crée le micro
+  const recognition = new SpeechRecognition();
+
+  // On choisit la langue du micro
+  recognition.lang = voiceLang;
+
+  // Le micro commence à écouter
+  setListening(true);
+
+  // Quand le navigateur comprend la phrase
+  recognition.onresult = function (event) {
+    // On récupère la première phrase reconnue par le navigateur
+    const text = event.results[0][0].transcript; //text = "Ich heiße Eya"
+
+    // On met la phrase dans le champ de texte
+    setInput(text);
+  };
+
+  // Si le micro s'arrête
+  recognition.onend = function () {
+    setListening(false);
+  };
+
+  // Si une erreur arrive
+  recognition.onerror = function () {
+    setListening(false);
+  };
+
+  // On démarre le micro
+  recognition.start();
 }
 
-
-
-
-  function startVoiceRecognition() {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("La reconnaissance vocale n'est pas supportée sur ce navigateur.");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = voiceLang;
-
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    setListening(true);
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(transcript);
-    };
-
-    recognition.onerror = (event) => {
-      console.log("Erreur micro :", event.error);
-      setListening(false);
-    };
-
-    recognition.onend = () => {
-      setListening(false);
-    };
-
-    recognition.start();
-  }
-
   useEffect(() => {
-    if (boxRef.current) {
-      boxRef.current.scrollTop = boxRef.current.scrollHeight;
-    }
-  }, [messages]);
+    const interval = setInterval(() => { //répéter une action plusieurs fois
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetch("http://127.0.0.1:8000/update-time", {
-        method: "POST",
+      fetch("http://127.0.0.1:8000/update-time", { //route
+
+        method: "POST", //envoyer les donnés au backend 
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json", //envoyées au format JSON
         },
         body: JSON.stringify({
           email: "test@gmail.com",
@@ -232,19 +294,19 @@ function speakText(text) {
   useEffect(() => {
     if (scenario === "cafe") {
       setMessages([
-        { role: "bot", text: "Guten Tag! Was möchten Sie bestellen?" }
+        { role: "bot", text: "Guten Tag! Was möchten Sie bestellen?" },
       ]);
     }
 
     if (scenario === "restaurant") {
       setMessages([
-        { role: "bot", text: "Guten Abend! Haben Sie reserviert?" }
+        { role: "bot", text: "Guten Abend! Haben Sie reserviert?" },
       ]);
     }
 
     if (scenario === "supermarche") {
       setMessages([
-        { role: "bot", text: "Hallo! Kann ich Ihnen helfen?" }
+        { role: "bot", text: "Hallo! Kann ich Ihnen helfen?" },
       ]);
     }
   }, [scenario]);
@@ -285,14 +347,15 @@ function speakText(text) {
       const res = await fetch(API, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-         body: JSON.stringify({
+        body: JSON.stringify({
           message: text,
           mode: modeFinal,
-          email: localStorage.getItem("email")
+          email: localStorage.getItem("email"),
+          explanation_language: explanationLanguage,
         }),
-          signal: controller.signal
+        signal: controller.signal,
       });
 
       if (!res.ok) {
@@ -328,7 +391,10 @@ function speakText(text) {
           : err?.message || JSON.stringify(err);
 
       console.log("Erreur fetch:", err);
-      setMessages((prev) => [...prev, { role: "bot", text: `⚠️ Erreur: ${msg}` }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: "bot", text: `⚠️ Erreur: ${msg}` },
+      ]);
     } finally {
       clearTimeout(timeoutId);
       setLoading(false);
@@ -337,38 +403,100 @@ function speakText(text) {
 
   return (
     <div className="h-screen flex flex-col bg-[#171717]">
-
       <div className="w-full">
         <div className="h-[5px] bg-black"></div>
         <div className="h-[5px] bg-red-600"></div>
         <div className="h-[5px] bg-[#FFC107]"></div>
       </div>
 
-      <button
-        onClick={() => navigate("/ness")}
-        className="
-        fixed top-8 right-8 z-50
+        <div className="fixed top-6 right-3 sm:top-8 sm:right-8 z-50 flex items-center gap-2 sm:gap-3">
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() => setShowExplanationMenu(!showExplanationMenu)}
+      className="h-10 sm:h-11 min-w-[95px] sm:min-w-[120px] rounded-full border border-[#FFC107] bg-[#171717] px-5 text-sm font-medium text-[#FFC107] flex items-center justify-between gap-3 hover:bg-[#FFC107] hover:text-black transition"
+    >
+      <span>
+        {explanationLanguage === "auto"
+          ? "Auto"
+          : explanationLanguage === "derja"
+          ? "Derja"
+          : "Français"}
+      </span>
+      <span>⌄</span>
+    </button>
 
-        w-11 h-11
+    {showExplanationMenu && (
+      <div className="absolute right-0 mt-2 w-[120px] rounded-2xl border border-[#FFC107] bg-[#171717] p-2 shadow-lg">
+        <button
+          type="button"
+          onClick={() => {
+            setExplanationLanguage("auto");
+            setShowExplanationMenu(false);
+          }}
+          className={`w-full px-4 py-2 rounded-xl text-left text-sm transition ${
+            explanationLanguage === "auto"
+              ? "bg-[#FFC107] text-black"
+              : "text-[#FFC107] hover:bg-[#FFC107] hover:text-black"
+          }`}
+        >
+          Auto
+        </button>
 
-        rounded-full
-        border border-[#FFC107]
-        bg-[#171717]
+        <button
+          type="button"
+          onClick={() => {
+            setExplanationLanguage("derja");
+            setShowExplanationMenu(false);
+          }}
+          className={`w-full px-4 py-2 rounded-xl text-left text-sm transition ${
+            explanationLanguage === "derja"
+              ? "bg-[#FFC107] text-black"
+              : "text-[#FFC107] hover:bg-[#FFC107] hover:text-black"
+          }`}
+        >
+          Derja
+        </button>
 
-        flex items-center justify-center
+        <button
+          type="button"
+          onClick={() => {
+            setExplanationLanguage("fr");
+            setShowExplanationMenu(false);
+          }}
+          className={`w-full px-4 py-2 rounded-xl text-left text-sm transition ${
+            explanationLanguage === "fr"
+              ? "bg-[#FFC107] text-black"
+              : "text-[#FFC107] hover:bg-[#FFC107] hover:text-black"
+          }`}
+        >
+          Français
+        </button>
+      </div>
+    )}
+  </div>
 
-        text-[#FFC107]
-        text-xl
+  <button
+    onClick={() => navigate("/ness")}
+    className="
+    w-11 h-11
+    rounded-full
+    border border-[#FFC107]
+    bg-[#171717]
+    flex items-center justify-center
+    text-[#FFC107]
+    text-xl
+    shadow-sm
+    hover:bg-[#FFC107]
+    hover:text-black
+    transition
+    "
+  >
+    ✕
+  </button>
+</div>
 
-        shadow-sm
-        hover:bg-[#FFC107]
-       hover:text-black
 
-        transition
-        "
-      >
-        ✕
-      </button>
 
       <div className="border-b border-[#3A2600] flex items-center px-4 sm:px-8 py-3 sm:py-4 bg-[#171717]">
         <div className="flex items-center gap-4">
@@ -393,6 +521,8 @@ function speakText(text) {
         className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 bg-[#171717]"
       >
         <div className="max-w-4xl mx-auto">
+         
+
           {messages.map((m, i) => (
             <div
               key={i}
@@ -427,17 +557,68 @@ function speakText(text) {
       </div>
 
       <div className="border-t border-[#3A2600] px-3 sm:px-6 py-3 sm:py-4 bg-[#171717]">
-        <div className="max-w-4xl w-full mx-auto flex items-center gap-2 sm:gap-4">
+        <div className="max-w-4xl w-full mx-auto flex items-center gap-1.5 sm:gap-4">
+          <div className="relative">
+  <button
+    type="button"
+    onClick={() => setShowVoiceMenu(!showVoiceMenu)}
+    className="h-10 sm:h-12 min-w-[62px] sm:min-w-[80px] rounded-2xl border border-[#3A2600] bg-[#0F0F0F] px-4 text-sm text-[#FFC107] outline-none flex items-center justify-between gap-3 hover:bg-[#1F1F1F] transition"
+  >
+    <span>
+      {voiceLang === "de-DE" ? "DE" : voiceLang === "fr-FR" ? "FR" : "AR"}
+    </span>
+    <span>⌄</span>
+  </button>
 
-          <select
-            value={voiceLang}
-            onChange={(e) => setVoiceLang(e.target.value)}
-            className="h-10 sm:h-12 rounded-2xl border border-[#3A2600] bg-[#0F0F0F] px-3 text-sm text-[#FFC107] outline-none"
-          >
-            <option value="de-DE">DE</option>
-            <option value="fr-FR">FR</option>
-            <option value="ar-TN">AR</option>
-          </select>
+  {showVoiceMenu && (
+    <div className="absolute bottom-14 left-0 z-50 w-[80px] rounded-2xl border border-[#3A2600] bg-[#171717] p-2 shadow-lg">
+      <button
+        type="button"
+        onClick={() => {
+          setVoiceLang("de-DE");
+          setShowVoiceMenu(false);
+        }}
+        className={`w-full px-3 py-2 rounded-xl text-left text-sm transition ${
+          voiceLang === "de-DE"
+            ? "bg-[#FFC107] text-black"
+            : "text-[#FFC107] hover:bg-[#FFC107] hover:text-black"
+        }`}
+      >
+        DE
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          setVoiceLang("fr-FR");
+          setShowVoiceMenu(false);
+        }}
+        className={`w-full px-3 py-2 rounded-xl text-left text-sm transition ${
+          voiceLang === "fr-FR"
+            ? "bg-[#FFC107] text-black"
+            : "text-[#FFC107] hover:bg-[#FFC107] hover:text-black"
+        }`}
+      >
+        FR
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          setVoiceLang("ar-TN");
+          setShowVoiceMenu(false);
+        }}
+        className={`w-full px-3 py-2 rounded-xl text-left text-sm transition ${
+          voiceLang === "ar-TN"
+            ? "bg-[#FFC107] text-black"
+            : "text-[#FFC107] hover:bg-[#FFC107] hover:text-black"
+        }`}
+      >
+        AR
+      </button>
+    </div>
+  )}
+</div>
 
           <button
             onClick={startVoiceRecognition}
@@ -468,10 +649,8 @@ function speakText(text) {
           >
             {loading ? "..." : "➤"}
           </button>
-
         </div>
       </div>
-
     </div>
   );
 }
